@@ -88,5 +88,38 @@
 
     </form>
 
+    {% if result %}
+
+        <h2>Optimization Results</h2>
+
+        <h3>Selected Expenses:</h3>
+
+        {% if result.selected_expenses %}
+            <ul>
+                {% for name in result.selected_expenses %}
+                    <li>{{ name }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No expenses selected.</p>
+        {% endif %}
+
+        <p>
+            <strong>Maximum Priority:</strong>
+            {{ result.maximum_priority }}
+        </p>
+
+        <p>
+            <strong>Total Cost:</strong>
+            ${{ result.total_cost }}
+        </p>
+
+        <p>
+            <strong>Remaining Budget:</strong>
+            ${{ result.remaining_budget }}
+        </p>
+
+    {% endif %}
+
 </body>
 </html>
