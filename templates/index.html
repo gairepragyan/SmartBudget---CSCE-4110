@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,46 +47,43 @@
 
         <h2>Expense Information</h2>
 
-        <p>
-            <label for="expense_name">Expense Name:</label>
+        {% for expense in expenses %}
 
-            <input
-                type="text"
-                id="expense_name"
-                name="expense_name"
-                value="{{ expense_name }}"
-                required
-            >
-        </p>
+            <h3>Expense {{ loop.index }}</h3>
 
-        <p>
-            <label for="expense_cost">Expense Cost:</label>
+            <p>
+                <label>Expense Name:</label>
+                <input
+                    type="text"
+                    name="expense_name"
+                    value="{{ expense.name }}"
+                >
+            </p>
 
-            <input
-                type="number"
-                id="expense_cost"
-                name="expense_cost"
-                min="1"
-                value="{{ expense_cost }}"
-                required
-            >
-        </p>
+            <p>
+                <label>Expense Cost:</label>
+                <input
+                    type="number"
+                    name="expense_cost"
+                    min="1"
+                    value="{{ expense.cost }}"
+                >
+            </p>
 
-        <p>
-            <label for="expense_priority">Priority Score:</label>
+            <p>
+                <label>Priority Score:</label>
+                <input
+                    type="number"
+                    name="expense_priority"
+                    min="0"
+                    value="{{ expense.priority }}"
+                >
+            </p>
 
-            <input
-                type="number"
-                id="expense_priority"
-                name="expense_priority"
-                min="0"
-                value="{{ expense_priority }}"
-                required
-            >
-        </p>
+        {% endfor %}
 
         <button type="submit">
-            Validate Input
+            Validate Expenses
         </button>
 
     </form>

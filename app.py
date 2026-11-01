@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -9,48 +10,89 @@ def home():
     success = None
 
     budget = ""
-    expense_name = ""
-    expense_cost = ""
-    expense_priority = ""
+    expenses = [
+        {"name": "", "cost": "", "priority": ""},
+        {"name": "", "cost": "", "priority": ""},
+        {"name": "", "cost": "", "priority": ""},
+        {"name": "", "cost": "", "priority": ""},
+    ]
 
     if request.method == "POST":
         budget = request.form.get("budget", "").strip()
-        expense_name = request.form.get("expense_name", "").strip()
-        expense_cost = request.form.get("expense_cost", "").strip()
-        expense_priority = request.form.get("expense_priority", "").strip()
 
-        if not expense_name:
-            error = "Expense name cannot be empty."
+        names = request.form.getlist("expense_name")
+        costs = request.form.getlist("expense_cost")
+        priorities = request.form.getlist("expense_priority")
 
-        else:
-            try:
-                budget_value = int(budget)
-                cost_value = int(expense_cost)
-                priority_value = int(expense_priority)
+        expenses = []
 
-                if budget_value <= 0:
-                    error = "Budget must be greater than 0."
+        for name, cost, priority in zip(names, costs, priorities):
+            expenses.append(
+                {
+                    "name": name.strip(),
+                    "cost": cost.strip(),
+                    "priority": priority.strip(),
+                }
+            )
 
-                elif cost_value <= 0:
-                    error = "Expense cost must be greater than 0."
+        try:
+            budget_value = int(budget)
 
-                elif priority_value < 0:
-                    error = "Priority score cannot be negative."
+            if budget_value <= 0:
+                error = "Budget must be greater than 0."
 
-                else:
-                    success = "Input accepted. The expense is ready for optimization."
+            else:
+                valid_expenses = []
 
-            except ValueError:
-                error = "Budget, cost, and priority must be whole numbers."
+                for expense in expenses:
+                    name = expense["name"]
+                    cost = expense["cost"]
+                    priority = expense["priority"]
+
+                    if not name and not cost and not priority:
+                        continue
+
+                    if not name or not cost or not priority:
+                        error = "Each expense must include a name, cost, and priority."
+                        break
+
+                    cost_value = int(cost)
+                    priority_value = int(priority)
+
+                    if cost_value <= 0:
+                        error = "Expense cost must be greater than 0."
+                        break
+
+                    if priority_value < 0:
+                        error = "Priority score cannot be negative."
+                        break
+
+                    valid_expenses.append(
+                        {
+                            "name": name,
+                            "cost": cost_value,
+                            "priority": priority_value,
+                        }
+                    )
+
+                if not error:
+                    if len(valid_expenses) == 0:
+                        error = "Please enter at least one expense."
+                    else:
+                        success = (
+                            f"Input accepted. {len(valid_expenses)} expense(s) "
+                            "are ready for optimization."
+                        )
+
+        except ValueError:
+            error = "Budget, cost, and priority must be whole numbers."
 
     return render_template(
         "index.html",
         error=error,
         success=success,
         budget=budget,
-        expense_name=expense_name,
-        expense_cost=expense_cost,
-        expense_priority=expense_priority,
+        expenses=expenses,
     )
 
 
