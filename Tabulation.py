@@ -4,25 +4,25 @@
 # Tabulation + Result Reconstruction
 
 
-# PART 1: Build the DP table
+# PART 1: Built the DP table
 def knapsack_tabulation(costs, priorities, budget):
 
     n = len(costs)
 
-    # Create DP table with n+1 rows and budget+1 columns
+    # Created DP table with n+1 rows and budget+1 columns
     dp = [[0] * (budget + 1) for _ in range(n + 1)]
 
-    # Go through each item
+    # Went  through each item
     for i in range(1, n + 1):
 
         cost = costs[i - 1]
         priority = priorities[i - 1]
 
-        # Go through each possible budget
+        # Went  through each possible budget
         for b in range(1, budget + 1):
 
             if cost > b:
-                # Item is too expensive, so skip it
+                # Item too expensive, so skip it
                 dp[i][b] = dp[i - 1][b]
 
             else:
@@ -46,10 +46,10 @@ def reconstruct_items(dp, costs, names, budget):
     i = len(costs)
     b = budget
 
-    # Start from the bottom-right corner of the DP table
+    # Started from the bottom-right corner of the DP table
     while i > 0 and b > 0:
 
-        # Compare the current cell with the cell above
+        # Compared the current cell with the cell above
         if dp[i][b] == dp[i - 1][b]:
 
             # Current item was not selected
@@ -63,10 +63,10 @@ def reconstruct_items(dp, costs, names, budget):
             # Subtract the selected item's cost
             b -= costs[i - 1]
 
-            # Move to the previous item
+            # Moved to the previous item
             i -= 1
 
-    # Restore the original order
+    # Restored the original order
     selected_indices.reverse()
 
     selected_names = [
@@ -77,7 +77,7 @@ def reconstruct_items(dp, costs, names, budget):
 
 def solve_budget(names, costs, priorities, budget):
 
-    # Step 1: Create the DP table
+    # Step 1: Created the DP table
     dp = knapsack_tabulation(costs, priorities, budget)
 
     # Step 2: Find selected expenses
@@ -85,16 +85,16 @@ def solve_budget(names, costs, priorities, budget):
         dp, costs, names, budget
     )
 
-    # Step 3: Calculate total cost
+    # Step 3: Calculated total cost
     total_cost = sum(costs[i] for i in selected_indices)
 
-    # Step 4: Calculate remaining budget
+    # Step 4: Calculated remaining budget
     remaining_budget = budget - total_cost
 
     # Step 5: Find maximum priority
     max_priority = dp[len(costs)][budget]
 
-    # Step 6: Return all results
+    # Step 6: Returned all results
     return {
         "maximum_priority": max_priority,
         "selected_expenses": selected_names,
@@ -114,7 +114,7 @@ def main():
     priorities = [10, 9, 8, 6]
     budget = 500
 
-    # Step 2: Test the new reusable function
+    # Step 2: Tested the new reusable function
     result = solve_budget(names, costs, priorities, budget)
 
     print("\nTESTING solve_budget():", result)
@@ -122,7 +122,7 @@ def main():
     # Step 3: Build the DP table for display
     dp = knapsack_tabulation(costs, priorities, budget)
 
-    # Step 4: Display available expenses
+    # Step 4: Displayed available expenses
     print("\nAvailable Expenses:")
 
     for i in range(len(names)):
@@ -134,7 +134,7 @@ def main():
 
     print("\nTotal Budget: $", budget, sep="")
 
-    # Step 5: Display DP table information
+    # Step 5: Displayed DP table information
     if budget <= 20:
         print("\nDP Table:")
         for row in dp:
@@ -144,7 +144,7 @@ def main():
         print("Table Size:", len(dp), "rows x",
               len(dp[0]), "columns")
 
-    # Step 6: Display final result
+    # Step 6: Displayed final result
     print("\n              FINAL RESULT              ")
 
     print("Maximum Priority:", result["maximum_priority"])
@@ -161,7 +161,5 @@ def main():
     print("Remaining Budget: $",
           result["remaining_budget"], sep="")
 
-
-# PART 5: Run the program
 if __name__ == "__main__":
     main()
