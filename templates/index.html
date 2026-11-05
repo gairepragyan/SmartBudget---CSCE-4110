@@ -120,6 +120,57 @@
         </p>
 
     {% endif %}
+    
+
+    {% if memo_result %}
+
+        <h2>Memoization Results (Top-Down DP)</h2>
+
+        <h3>Selected Expenses:</h3>
+
+        {% if memo_result.selected_expenses %}
+            <ul>
+                {% for expense in memo_result.selected_expenses %}
+                    <li>{{ expense.name }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No expenses selected.</p>
+        {% endif %}
+
+        <p>
+            <strong>Maximum Priority:</strong>
+            {{ memo_result.maximum_priority }}
+        </p>
+
+        <p>
+            <strong>Total Cost:</strong>
+            ${{ memo_result.total_spent }}
+        </p>
+
+        <p>
+            <strong>Remaining Budget:</strong>
+            ${{ memo_result.remaining_budget }}
+        </p>
+
+        <p>
+            <strong>DP States Evaluated:</strong>
+            {{ memo_result.states_evaluated }}
+        </p>
+
+        <h3>Algorithm Comparison</h3>
+
+        {% if result.maximum_priority == memo_result.maximum_priority %}
+            <p style="color: green;">
+                Both algorithms agree on the maximum priority.
+            </p>
+        {% else %}
+            <p style="color: red;">
+                Warning: The algorithms returned different maximum priorities.
+            </p>
+        {% endif %}
+
+    {% endif %}
 
     {% if dp_table %}
 
