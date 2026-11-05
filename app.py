@@ -1,6 +1,6 @@
 
 from flask import Flask, render_template, request
-from Tabulation import solve_budget
+from Tabulation import solve_budget, knapsack_tabulation
 
 app = Flask(__name__)
 
@@ -10,6 +10,7 @@ def home():
     error = None
     success = None
     result = None
+    dp_table = None
 
     budget = ""
     expenses = [
@@ -89,7 +90,10 @@ def home():
                         result = solve_budget(
                             names, costs, priorities, budget_value
                         )
-
+                        if budget_value <= 20:
+                            dp_table = knapsack_tabulation(
+                                costs, priorities, budget_value
+                            )
                         success = "Budget optimization completed successfully."
 
 
@@ -103,6 +107,7 @@ def home():
         budget=budget,
         expenses=expenses,
         result=result,
+        dp_table=dp_table,
     )
 
 
