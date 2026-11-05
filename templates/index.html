@@ -121,5 +121,41 @@
 
     {% endif %}
 
+    {% if dp_table %}
+
+        <h2>Dynamic Programming Table (Tabulation)</h2>
+
+        <p>
+            Each row represents the number of expenses considered.
+            Each column represents a possible budget.
+            Each cell shows the maximum priority achievable.
+        </p>
+
+        <div style="overflow-x: auto;">
+            <table border="1" cellpadding="8" cellspacing="0">
+
+                <tr>
+                    <th>Items / Budget</th>
+
+                    {% for b in range(dp_table[0]|length) %}
+                        <th>{{ b }}</th>
+                    {% endfor %}
+                </tr>
+
+                {% for row in dp_table %}
+                    <tr>
+                        <th>{{ loop.index0 }}</th>
+
+                        {% for value in row %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
+    {% endif %}
+
 </body>
 </html>
