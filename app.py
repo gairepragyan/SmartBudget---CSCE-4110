@@ -1,6 +1,7 @@
 
 from flask import Flask, render_template, request
 from Tabulation import solve_budget, knapsack_tabulation
+from Memoization import knapsack_memoization
 
 app = Flask(__name__)
 
@@ -10,6 +11,7 @@ def home():
     error = None
     success = None
     result = None
+    memo_result = None
     dp_table = None
 
     budget = ""
@@ -90,6 +92,9 @@ def home():
                         result = solve_budget(
                             names, costs, priorities, budget_value
                         )
+                        memo_result = knapsack_memoization(
+                            valid_expenses, budget_value
+                        )
                         if budget_value <= 20:
                             dp_table = knapsack_tabulation(
                                 costs, priorities, budget_value
@@ -107,6 +112,7 @@ def home():
         budget=budget,
         expenses=expenses,
         result=result,
+        memo_result=memo_result,
         dp_table=dp_table,
     )
 
