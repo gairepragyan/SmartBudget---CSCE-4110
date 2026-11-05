@@ -1,5 +1,6 @@
 
 from flask import Flask, render_template, request
+from Tabulation import solve_budget
 
 app = Flask(__name__)
 
@@ -8,6 +9,7 @@ app = Flask(__name__)
 def home():
     error = None
     success = None
+    result = None
 
     budget = ""
     expenses = [
@@ -75,14 +77,21 @@ def home():
                         }
                     )
 
+                
                 if not error:
                     if len(valid_expenses) == 0:
                         error = "Please enter at least one expense."
                     else:
-                        success = (
-                            f"Input accepted. {len(valid_expenses)} expense(s) "
-                            "are ready for optimization."
+                        names = [expense["name"] for expense in valid_expenses]
+                        costs = [expense["cost"] for expense in valid_expenses]
+                        priorities = [expense["priority"] for expense in valid_expenses]
+
+                        result = solve_budget(
+                            names, costs, priorities, budget_value
                         )
+
+                        success = "Budget optimization completed successfully."
+
 
         except ValueError:
             error = "Budget, cost, and priority must be whole numbers."
@@ -93,6 +102,7 @@ def home():
         success=success,
         budget=budget,
         expenses=expenses,
+        result=result,
     )
 
 
