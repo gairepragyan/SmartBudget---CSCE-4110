@@ -5,13 +5,13 @@
 
 
 # PART 1: Built the DP table
-def knapsack_tabulation(costs, priorities, budget):
+def knapsack_tabulation(costs, priorities, budget, return_count=False):
 
     n = len(costs)
 
     # Created DP table with n+1 rows and budget+1 columns
     dp = [[0] * (budget + 1) for _ in range(n + 1)]
-
+    states_evaluated = 0
     # Went  through each item
     for i in range(1, n + 1):
 
@@ -20,7 +20,7 @@ def knapsack_tabulation(costs, priorities, budget):
 
         # Went  through each possible budget
         for b in range(1, budget + 1):
-
+            states_evaluated += 1
             if cost > b:
                 # Item too expensive, so skip it
                 dp[i][b] = dp[i - 1][b]
@@ -34,6 +34,9 @@ def knapsack_tabulation(costs, priorities, budget):
 
                 # Choose the maximum priority
                 dp[i][b] = max(skip, take)
+
+    if return_count:
+        return dp, states_evaluated
 
     return dp
 
