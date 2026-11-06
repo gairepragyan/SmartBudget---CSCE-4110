@@ -13,6 +13,7 @@ def home():
     result = None
     memo_result = None
     dp_table = None
+    tabulation_states = None
 
     budget = ""
     expenses = [
@@ -96,8 +97,8 @@ def home():
                             valid_expenses, budget_value
                         )
                         if budget_value <= 20:
-                            dp_table = knapsack_tabulation(
-                                costs, priorities, budget_value
+                            dp_table, tabulation_states = knapsack_tabulation(
+                                costs, priorities, budget_value, return_count=True
                             )
                         success = "Budget optimization completed successfully."
 
@@ -114,6 +115,7 @@ def home():
         result=result,
         memo_result=memo_result,
         dp_table=dp_table,
+        tabulation_states=tabulation_states,
     )
 
 
