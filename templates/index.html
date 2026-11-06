@@ -118,7 +118,12 @@
             <strong>Remaining Budget:</strong>
             ${{ result.remaining_budget }}
         </p>
-
+        {% if tabulation_states is not none %}
+        <p>
+            <strong>DP States Evaluated (Tabulation):</strong>
+            {{ tabulation_states }}
+        </p>
+        {% endif %}
     {% endif %}
     
 
