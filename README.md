@@ -219,3 +219,18 @@ Team members also collaborate through GitHub branches, Pull Requests, code revie
 ## Project Purpose
 
 The goal of SmartBudget is to demonstrate how dynamic programming can solve practical optimization problems. By comparing memoization and tabulation, the project explores algorithm correctness, time complexity, evaluated DP states, and observed execution performance.
+
+## Web Application Validation Testing
+
+The SmartBudget Flask application was manually tested with
+the following scenarios:
+
+- Original $500 budget example: Both algorithms returned
+  maximum priority 23 and selected Course, Books, and Gym.
+- Missing expense cost: The application displayed an error
+  message and preserved the entered values.
+- Negative priority: Input validation rejected the invalid value.
+- Zero budget: Input validation prevented a zero budget.
+
+These tests help verify the application's input handling,
+algorithm integration, and user experience.
