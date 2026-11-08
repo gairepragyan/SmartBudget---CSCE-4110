@@ -159,9 +159,9 @@ It generates:
 
 ### Experiment 2: Increasing the Budget
 
-The additional budget-scaling experiment is currently being reviewed in a separate Pull Request and is not yet part of the main branch.
+The budget-scaling experiment is included in the main branch and compares memoization and tabulation as the available budget increases.
 
-Once merged, it can be run using:
+Run the budget-scaling experiment using:
 
 ```bash
 python3 benchmark_budget.py
@@ -194,7 +194,7 @@ SmartBudget---CSCE-4110/
 └── README.md
 ```
 
-Additional performance-analysis files will be included when their Pull Request is merged.
+The repository includes both expense-count and budget-scaling benchmark scripts, their CSV results, and the generated comparison graphs.
 
 ## Team Contributions
 
