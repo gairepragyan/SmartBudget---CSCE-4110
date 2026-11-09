@@ -17,10 +17,7 @@ def home():
 
     budget = ""
     expenses = [
-        {"name": "", "cost": "", "priority": ""},
-        {"name": "", "cost": "", "priority": ""},
-        {"name": "", "cost": "", "priority": ""},
-        {"name": "", "cost": "", "priority": ""},
+    {"name": "", "cost": "", "priority": ""}
     ]
 
     if request.method == "POST":
