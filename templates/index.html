@@ -207,21 +207,52 @@
     </div>
 
 </div>
-            <h3>Selected Expenses:</h3>
+            
 
-            {% if result.selected_expenses %}
+            
+{% if memo_result and memo_result.selected_expenses %}
 
-            <ul>
-                {% for name in result.selected_expenses %}
-                    <li>{{ name }}</li>
-                {% endfor %}
-            </ul>
+<h3>Selected Expense Breakdown (Memoization)</h3>
 
-            {% else %}
+    <div class="selected-expense-list">
 
-                <p>No expenses selected.</p>
+        {% for expense in memo_result.selected_expenses %}
 
-            {% endif %}
+                <div class="selected-expense-card">
+
+                    <div class="selected-expense-header">
+                        <strong>{{ expense.name }}</strong>
+                        <span>${{ expense.cost }}</span>
+                    </div>
+
+                    <p>Priority: {{ expense.priority }}</p>
+
+                    <div class="expense-progress-track">
+                        <div
+                            class="expense-progress-fill"
+                            style="width: {{ ((expense.cost | int) / (budget | int) * 100) | round(1) }}%;"
+                        ></div>
+                    </div>
+
+                    <p>
+                        {{ ((expense.cost | int) / (budget | int) * 100) | round(1) }}%
+                        of total budget
+                    </p>
+
+                </div>
+
+        
+
+        {% endfor %}
+
+    </div>
+
+{% else %}
+
+    <p>No expenses selected.</p>
+
+{% endif %}
+
 
             <p>
                 <strong>Maximum Priority:</strong>
