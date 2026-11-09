@@ -1,217 +1,469 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBudget</title>
+
+    <title>SmartBudget | Premium Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-    <h1>SmartBudget</h1>
+<div class="dashboard-layout">
 
-    <p>
-        Budget Optimization Using 0/1 Knapsack
-        and Dynamic Programming
-    </p>
+    
+    <aside class="sidebar">
 
-    <h2>Enter Budget Information</h2>
+        <h2 class="sidebar-logo">SmartBudget</h2>
+        <p class="sidebar-subtitle">Financial Intelligence</p>
 
-    {% if error %}
-        <p style="color: red;">
-            {{ error }}
-        </p>
-    {% endif %}
+        <nav class="sidebar-nav">
+            <a href="#overview">Overview</a>
+            <a href="#expenses">Expenses</a>
+            <a href="#analytics">Analytics</a>
+            <a href="#dp-table">DP Table</a>
+        </nav>
 
-    {% if success %}
-        <p style="color: green;">
+    </aside>
+
+    
+    <main class="dashboard-main">
+
+      
+        <section id="overview">
+
+            <h1>Dashboard Overview</h1>
+
+            <p>
+                Budget Optimization Using 0/1 Knapsack
+                and Dynamic Programming
+            </p>
+
+        </section>
+
+        
+        <section id="expenses">
+
+            <h2>Enter Budget Information</h2>
+
+            {% if error %}
+                <p style="color: #F87171;">{{ error }}</p>
+            {% endif %}
+
+            {% if success %}
+            <p id="success-message" style="color: #4ADE80;">
             {{ success }}
-        </p>
-    {% endif %}
-
-    <form method="POST">
-
-        <p>
-            <label for="budget">Total Budget:</label>
-
-            <input
-                type="number"
-                id="budget"
-                name="budget"
-                min="1"
-                value="{{ budget }}"
-                required
-            >
-        </p>
-
-        <h2>Expense Information</h2>
-
-        {% for expense in expenses %}
-
-            <h3>Expense {{ loop.index }}</h3>
-
-            <p>
-                <label>Expense Name:</label>
-                <input
-                    type="text"
-                    name="expense_name"
-                    value="{{ expense.name }}"
-                >
             </p>
+            {% endif %}
 
-            <p>
-                <label>Expense Cost:</label>
-                <input
-                    type="number"
-                    name="expense_cost"
-                    min="1"
-                    value="{{ expense.cost }}"
+            <form method="POST">
+
+                <p>
+                    <label for="budget">Total Budget:</label>
+
+                    <input
+                        type="number"
+                        id="budget"
+                        name="budget"
+                        min="1"
+                        value="{{ budget }}"
+                        required
+                    >
+                </p>
+
+                <h2>Expense Information</h2>
+
+                <p>Add as many expenses as you need.</p>
+
+                
+                <div id="expense-container" class="expense-grid">
+
+                    {% for expense in expenses %}
+
+                    <div class="expense-card">
+
+                        <h3>Expense {{ loop.index }}</h3>
+
+                        <p>
+                            <label>Expense Name:</label>
+
+                            <input
+                                type="text"
+                                name="expense_name"
+                                value="{{ expense.name }}"
+                                required
+                            >
+                        </p>
+
+                        <p>
+                            <label>Expense Cost:</label>
+
+                            <input
+                                type="number"
+                                name="expense_cost"
+                                min="1"
+                                value="{{ expense.cost }}"
+                                required
+                            >
+                        </p>
+
+                        <p>
+                            <label>Priority Score:</label>
+
+                            <input
+                                type="number"
+                                name="expense_priority"
+                                min="0"
+                                value="{{ expense.priority }}"
+                                required
+                            >
+                        </p>
+
+                        
+                        <button
+                            type="button"
+                            class="remove-expense-btn"
+                        >
+                            Remove Expense
+                        </button>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+               
+                <button
+                    type="button"
+                    id="add-expense-btn"
                 >
-            </p>
+                    + Add Another Expense
+                </button>
 
-            <p>
-                <label>Priority Score:</label>
-                <input
-                    type="number"
-                    name="expense_priority"
-                    min="0"
-                    value="{{ expense.priority }}"
-                >
-            </p>
+                
+                <button type="submit">
+                    Optimize My Budget
+                </button>
 
-        {% endfor %}
+            </form>
 
-        <button type="submit">
-            Validate Expenses
-        </button>
+        </section>
 
-    </form>
+        
+        {% if result %}
 
-    {% if result %}
+        <section id="results">
 
-        <h2>Optimization Results</h2>
+            <h2>Optimization Results</h2>
 
-        <h3>Selected Expenses:</h3>
+            <h3>Selected Expenses:</h3>
 
-        {% if result.selected_expenses %}
+            {% if result.selected_expenses %}
+
             <ul>
                 {% for name in result.selected_expenses %}
                     <li>{{ name }}</li>
                 {% endfor %}
             </ul>
-        {% else %}
-            <p>No expenses selected.</p>
+
+            {% else %}
+
+                <p>No expenses selected.</p>
+
+            {% endif %}
+
+            <p>
+                <strong>Maximum Priority:</strong>
+                {{ result.maximum_priority }}
+            </p>
+
+            <p>
+                <strong>Total Cost:</strong>
+                ${{ result.total_cost }}
+            </p>
+
+            <p>
+                <strong>Remaining Budget:</strong>
+                ${{ result.remaining_budget }}
+            </p>
+
+            {% if tabulation_states is not none %}
+
+            <p>
+                <strong>DP States Evaluated (Tabulation):</strong>
+                {{ tabulation_states }}
+            </p>
+
+            {% endif %}
+
+        </section>
+
         {% endif %}
 
-        <p>
-            <strong>Maximum Priority:</strong>
-            {{ result.maximum_priority }}
-        </p>
+        
+        {% if memo_result %}
 
-        <p>
-            <strong>Total Cost:</strong>
-            ${{ result.total_cost }}
-        </p>
+        <section id="analytics">
 
-        <p>
-            <strong>Remaining Budget:</strong>
-            ${{ result.remaining_budget }}
-        </p>
-        {% if tabulation_states is not none %}
-        <p>
-            <strong>DP States Evaluated (Tabulation):</strong>
-            {{ tabulation_states }}
-        </p>
-        {% endif %}
-    {% endif %}
-    
+            <h2>Memoization Results (Top-Down DP)</h2>
 
-    {% if memo_result %}
+            <h3>Selected Expenses:</h3>
 
-        <h2>Memoization Results (Top-Down DP)</h2>
+            {% if memo_result.selected_expenses %}
 
-        <h3>Selected Expenses:</h3>
-
-        {% if memo_result.selected_expenses %}
             <ul>
                 {% for expense in memo_result.selected_expenses %}
                     <li>{{ expense.name }}</li>
                 {% endfor %}
             </ul>
-        {% else %}
-            <p>No expenses selected.</p>
+
+            {% else %}
+
+                <p>No expenses selected.</p>
+
+            {% endif %}
+
+            <p>
+                <strong>Maximum Priority:</strong>
+                {{ memo_result.maximum_priority }}
+            </p>
+
+            <p>
+                <strong>Total Cost:</strong>
+                ${{ memo_result.total_spent }}
+            </p>
+
+            <p>
+                <strong>Remaining Budget:</strong>
+                ${{ memo_result.remaining_budget }}
+            </p>
+
+            <p>
+                <strong>DP States Evaluated:</strong>
+                {{ memo_result.states_evaluated }}
+            </p>
+
+            <h3>Algorithm Comparison</h3>
+
+            {% if result and result.maximum_priority == memo_result.maximum_priority %}
+
+                <p style="color: #4ADE80;">
+                    Both algorithms agree on the maximum priority.
+                </p>
+
+            {% else %}
+
+                <p style="color: #F87171;">
+                    Warning: The algorithms returned different
+                    maximum priorities.
+                </p>
+
+            {% endif %}
+
+        </section>
+
         {% endif %}
 
-        <p>
-            <strong>Maximum Priority:</strong>
-            {{ memo_result.maximum_priority }}
-        </p>
+        
+        {% if dp_table %}
 
-        <p>
-            <strong>Total Cost:</strong>
-            ${{ memo_result.total_spent }}
-        </p>
+        <section id="dp-table">
 
-        <p>
-            <strong>Remaining Budget:</strong>
-            ${{ memo_result.remaining_budget }}
-        </p>
+            <h2>Dynamic Programming Table (Tabulation)</h2>
 
-        <p>
-            <strong>DP States Evaluated:</strong>
-            {{ memo_result.states_evaluated }}
-        </p>
-
-        <h3>Algorithm Comparison</h3>
-
-        {% if result.maximum_priority == memo_result.maximum_priority %}
-            <p style="color: green;">
-                Both algorithms agree on the maximum priority.
+            <p>
+                Each row represents the number of expenses considered.
+                Each column represents a possible budget.
+                Each cell shows the maximum priority achievable.
             </p>
-        {% else %}
-            <p style="color: red;">
-                Warning: The algorithms returned different maximum priorities.
-            </p>
-        {% endif %}
 
-    {% endif %}
+            <div style="overflow-x: auto;">
 
-    {% if dp_table %}
+                <table border="1" cellpadding="8" cellspacing="0">
 
-        <h2>Dynamic Programming Table (Tabulation)</h2>
-
-        <p>
-            Each row represents the number of expenses considered.
-            Each column represents a possible budget.
-            Each cell shows the maximum priority achievable.
-        </p>
-
-        <div style="overflow-x: auto;">
-            <table border="1" cellpadding="8" cellspacing="0">
-
-                <tr>
-                    <th>Items / Budget</th>
-
-                    {% for b in range(dp_table[0]|length) %}
-                        <th>{{ b }}</th>
-                    {% endfor %}
-                </tr>
-
-                {% for row in dp_table %}
                     <tr>
+                        <th>Items / Budget</th>
+
+                        {% for b in range(dp_table[0]|length) %}
+                            <th>{{ b }}</th>
+                        {% endfor %}
+                    </tr>
+
+                    {% for row in dp_table %}
+
+                    <tr>
+
                         <th>{{ loop.index0 }}</th>
 
                         {% for value in row %}
                             <td>{{ value }}</td>
                         {% endfor %}
+
                     </tr>
-                {% endfor %}
 
-            </table>
-        </div>
+                    {% endfor %}
 
-    {% endif %}
+                </table>
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+    </main>
+
+</div>
+
+
+
+<script>
+    function clearOldResults() {
+    const results = document.getElementById("results");
+    const analytics = document.getElementById("analytics");
+    const dpTable = document.getElementById("dp-table");
+    const successMessage = document.getElementById("success-message");
+
+    if (results) {
+        results.style.display = "none";
+    }
+
+    if (analytics) {
+        analytics.style.display = "none";
+    }
+
+    if (dpTable) {
+        dpTable.style.display = "none";
+    }
+
+    if (successMessage) {
+        successMessage.style.display = "none";
+    }
+}
+
+    // Detect changes to the budget or expense fields
+    document.querySelector("form").addEventListener("input", function() {
+        clearOldResults();
+    });
+
+    // Detect expense cards being added or removed
+    document.querySelector("form").addEventListener("click", function(event) {
+
+        if (
+            event.target.id === "add-expense-btn" ||
+            event.target.classList.contains("remove-expense-btn")
+        ) {
+            clearOldResults();
+        }
+
+    });
+    const expenseContainer =
+        document.getElementById("expense-container");
+
+    const addExpenseButton =
+        document.getElementById("add-expense-btn");
+
+
+    
+    function updateExpenseNumbers() {
+
+        const cards =
+            expenseContainer.querySelectorAll(".expense-card");
+
+        cards.forEach(function(card, index) {
+
+            card.querySelector("h3").textContent =
+                "Expense " + (index + 1);
+
+        });
+
+    }
+
+
+    // Add a new expense
+    addExpenseButton.addEventListener("click", function() {
+
+        const expenseNumber =
+            expenseContainer.querySelectorAll(".expense-card").length + 1;
+
+        const newCard = document.createElement("div");
+
+        newCard.className = "expense-card";
+
+        newCard.innerHTML = `
+
+            <h3>Expense ${expenseNumber}</h3>
+
+            <p>
+                <label>Expense Name:</label>
+
+                <input
+                    type="text"
+                    name="expense_name"
+                    required
+                >
+            </p>
+
+            <p>
+                <label>Expense Cost:</label>
+
+                <input
+                    type="number"
+                    name="expense_cost"
+                    min="1"
+                    required
+                >
+            </p>
+
+            <p>
+                <label>Priority Score:</label>
+
+                <input
+                    type="number"
+                    name="expense_priority"
+                    min="0"
+                    required
+                >
+            </p>
+
+            <button
+                type="button"
+                class="remove-expense-btn"
+            >
+                Remove Expense
+            </button>
+
+        `;
+
+        expenseContainer.appendChild(newCard);
+
+        updateExpenseNumbers();
+
+    });
+
+
+    // Remove an expense
+    expenseContainer.addEventListener("click", function(event) {
+
+        if (event.target.classList.contains("remove-expense-btn")) {
+
+            const card = event.target.closest(".expense-card");
+
+            card.remove();
+
+            updateExpenseNumbers();
+
+        }
+
+    });
+
+</script>
 
 </body>
 </html>
