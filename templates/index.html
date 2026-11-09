@@ -162,6 +162,51 @@
 
             <h2>Optimization Results</h2>
 
+            <div class="summary-grid">
+
+    <div class="summary-card">
+        <p>Total Budget</p>
+        <h2>${{ budget }}</h2>
+    </div>
+
+    <div class="summary-card">
+        <p>Total Spent</p>
+        <h2>${{ result.total_cost }}</h2>
+    </div>
+
+    <div class="summary-card">
+        <p>Remaining Budget</p>
+        <h2>${{ result.remaining_budget }}</h2>
+    </div>
+
+    <div class="summary-card">
+        <p>Maximum Priority</p>
+        <h2>{{ result.maximum_priority }}</h2>
+    </div>
+
+</div>
+            <div class="budget-utilization">
+
+    <div class="utilization-header">
+        <h3>Budget Utilization</h3>
+        <span>
+            {{ ((result.total_cost / (budget | int)) * 100) | round(1) }}%
+        </span>
+    </div>
+
+    <div class="progress-track">
+        <div
+            class="progress-fill"
+            style="width: {{ (result.total_cost / (budget | int)) * 100 }}%;"
+        ></div>
+    </div>
+
+    <div class="utilization-footer">
+        <span>${{ result.total_cost }} allocated</span>
+        <span>${{ budget }} total budget</span>
+    </div>
+
+</div>
             <h3>Selected Expenses:</h3>
 
             {% if result.selected_expenses %}
