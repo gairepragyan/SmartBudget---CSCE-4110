@@ -146,7 +146,19 @@
                 >
                     + Add Another Expense
                 </button>
+                <button
+                    type="button"
+                    id="save-budget-btn"
+                >
+                    Save Budget
+                </button>
 
+                <button
+                    type="button"
+                    id="load-budget-btn"
+                >
+                    Load Budget
+                </button>
                 
             <button type="submit">
                 Optimize My Budget
@@ -632,7 +644,89 @@
         }
 
     });
+        const saveBudgetButton = document.getElementById("save-budget-btn");
 
+    saveBudgetButton.addEventListener("click", function() {
+
+        const budget = document.getElementById("budget").value;
+
+        const expenseCards = document.querySelectorAll(".expense-card");
+
+        const expenses = [];
+
+        expenseCards.forEach(function(card) {
+
+            const name = card.querySelector('[name="expense_name"]').value;
+            const cost = card.querySelector('[name="expense_cost"]').value;
+            const priority = card.querySelector('[name="expense_priority"]').value;
+
+            expenses.push({
+                name: name,
+                cost: cost,
+                priority: priority
+            });
+
+        });
+
+        const budgetData = {
+            budget: budget,
+            expenses: expenses
+        };
+
+        localStorage.setItem("smartBudgetData", JSON.stringify(budgetData));
+
+        alert("Budget saved successfully!");
+
+    });
+    // Load saved budget information
+const loadBudgetButton = document.getElementById("load-budget-btn");
+
+loadBudgetButton.addEventListener("click", function() {
+
+    const savedData = localStorage.getItem("smartBudgetData");
+
+    if (!savedData) {
+        alert("No saved budget found!");
+        return;
+    }
+
+    let budgetData;
+
+    try {
+        budgetData = JSON.parse(savedData);
+    } catch (error) {
+        alert("Saved budget data is invalid!");
+        return;
+    }
+
+    if (!budgetData || !Array.isArray(budgetData.expenses)) {
+        alert("Saved budget data is invalid!");
+        return;
+    }
+
+    // Restore the total budget
+    document.getElementById("budget").value = budgetData.budget;
+
+    expenseContainer.innerHTML = "";
+
+    budgetData.expenses.forEach(function(expense) {
+
+        addExpenseButton.click();
+
+        const cards = expenseContainer.querySelectorAll(".expense-card");
+        const newCard = cards[cards.length - 1];
+
+        newCard.querySelector('[name="expense_name"]').value = expense.name;
+        newCard.querySelector('[name="expense_cost"]').value = expense.cost;
+        newCard.querySelector('[name="expense_priority"]').value = expense.priority;
+
+    });
+
+    clearOldResults();
+
+    alert("Budget loaded successfully!");
+
+});
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
 <script>
