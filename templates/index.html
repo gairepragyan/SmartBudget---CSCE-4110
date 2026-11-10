@@ -210,6 +210,50 @@
 </div>
             
 
+<div class="budget-insights">
+
+    <h3>Budget Insights & Recommendations</h3>
+
+    <p>
+        You have allocated
+        {{ ((result.total_cost / (budget | int)) * 100) | round(1) }}%
+        of your total budget.
+    </p>
+
+    <p>
+        You have ${{ result.remaining_budget }} remaining
+        from your ${{ budget }} budget.
+    </p>
+
+    <p>
+        Your selected expenses achieved a maximum
+        priority score of {{ result.maximum_priority }}.
+    </p>
+    {% if (result.total_cost / (budget | int)) >= 0.9 %}
+
+        <p>
+            Recommendation: Your budget is nearly fully allocated.
+            Consider keeping some money available for unexpected expenses.
+        </p>
+
+    {% elif (result.total_cost / (budget | int)) >= 0.5 %}
+
+        <p>
+            Recommendation: You have allocated a substantial portion
+            of your budget while keeping some funds available.
+        </p>
+
+    {% else %}
+
+        <p>
+            Recommendation: A large portion of your budget remains
+            unallocated. Review your expenses to see whether
+            additional priorities should be considered.
+        </p>
+
+    {% endif %}
+</div>
+
             
 {% if memo_result and memo_result.selected_expenses %}
 
