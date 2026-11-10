@@ -27,6 +27,7 @@
             <a href="#expenses">Expenses</a>
             <a href="#analytics">Analytics</a>
             <a href="#dp-table">DP Table</a>
+            <a href="#algorithm-performance">Performance</a>
         </nav>
 
     </aside>
@@ -392,7 +393,31 @@
         </section>
 
         {% endif %}
+    <section id="algorithm-performance">
+    <h2>Algorithm Performance Visualization</h2>
 
+    <p>
+        Compare Memoization and Tabulation using
+        precomputed benchmark results.
+    </p>
+
+    <h3>Runtime vs. Number of Expenses</h3>
+
+    <div class="performance-chart">
+        <canvas id="expenseRuntimeChart"></canvas>
+    </div>
+
+    <h3>Runtime vs. Budget Size</h3>
+
+    <div class="performance-chart">
+        <canvas id="budgetRuntimeChart"></canvas>
+    </div>
+    <h3>DP States vs. Number of Expenses</h3>
+
+    <div class="performance-chart">
+    <canvas id="expenseStatesChart"></canvas>
+    </div>
+    </section>   
     </main>
 
 </div>
@@ -540,6 +565,171 @@
     });
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<script>
+    const expenseBenchmarks = {{ expense_benchmarks | tojson }};
+    const budgetBenchmarks = {{ budget_benchmarks | tojson }};
 
+    const budgetSizes = budgetBenchmarks.map(row => Number(row.budget));
+
+    const budgetMemoTimes = budgetBenchmarks.map(row => Number(row.memoization_ms));
+
+    const budgetTabTimes = budgetBenchmarks.map(row => Number(row.tabulation_ms));
+
+    console.log("Budget sizes:", budgetSizes);
+    console.log("Budget Memoization times:", budgetMemoTimes);
+    console.log("Budget Tabulation times:", budgetTabTimes);
+    console.log("Expense benchmark data:", expenseBenchmarks);
+
+    const itemCounts = expenseBenchmarks.map(row => Number(row.items));
+
+    const memoTimes = expenseBenchmarks.map(row => Number(row.memoization_ms));
+
+    const tabTimes = expenseBenchmarks.map(row => Number(row.tabulation_ms));
+    const memoStates = expenseBenchmarks.map(row => Number(row.memo_states));
+
+    const tabStates = expenseBenchmarks.map(row => Number(row.tab_states));
+
+    console.log("Memoization states:", memoStates);
+    console.log("Tabulation states:", tabStates);
+
+    console.log("Item counts:", itemCounts);
+    console.log("Memoization times:", memoTimes);
+    console.log("Tabulation times:", tabTimes);
+    
+const expenseChartCanvas = document.getElementById("expenseRuntimeChart");
+
+new Chart(expenseChartCanvas, {
+    type: "line",
+
+    data: {
+        labels: itemCounts,
+        datasets: [
+            {
+                label: "Memoization",
+                data: memoTimes,
+                borderColor: "#38bdf8",
+                tension: 0.3
+            },
+            {
+                label: "Tabulation",
+                data: tabTimes,
+                borderColor: "#f97316",
+                tension: 0.3
+            }
+        ]
+    },
+
+    options: {
+        responsive: true,
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Number of Expenses"
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Execution Time (ms)"
+                },
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+const budgetChartCanvas = document.getElementById("budgetRuntimeChart");
+
+new Chart(budgetChartCanvas, {
+    type: "line",
+
+    data: {
+        labels: budgetSizes,
+
+        datasets: [
+            {
+                label: "Memoization",
+                data: budgetMemoTimes,
+                borderColor: "#38bdf8",
+                tension: 0.3
+            },
+            {
+                label: "Tabulation",
+                data: budgetTabTimes,
+                borderColor: "#f97316",
+                tension: 0.3
+            }
+        ]
+    },
+
+    options: {
+        responsive: true,
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Budget Size ($)"
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Execution Time (ms)"
+                },
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+const statesChartCanvas = document.getElementById("expenseStatesChart");
+
+new Chart(statesChartCanvas, {
+    type: "line",
+
+    data: {
+        labels: itemCounts,
+
+        datasets: [
+            {
+                label: "Memoization States",
+                data: memoStates,
+                borderColor: "#38bdf8",
+                tension: 0.3
+            },
+            {
+                label: "Tabulation States",
+                data: tabStates,
+                borderColor: "#f97316",
+                tension: 0.3
+            }
+        ]
+    },
+
+    options: {
+        responsive: true,
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Number of Expenses"
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "DP States"
+                },
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+
+
+</script>
 </body>
 </html>
