@@ -24,6 +24,7 @@ def home():
     success = None
     result = None
     memo_result = None
+    priority_chart_data = []
     dp_table = None
     tabulation_states = None
 
@@ -105,6 +106,20 @@ def home():
                         memo_result = knapsack_memoization(
                             valid_expenses, budget_value
                         )
+                        selected_ids = {
+                            id(expense)
+                            for expense in memo_result["selected_expenses"]
+                            }
+
+                        priority_chart_data = [
+                            {
+                                "name": expense["name"],
+                                "cost": expense["cost"],
+                                "priority": expense["priority"],
+                               "selected": id(expense) in selected_ids
+                            }
+                        for expense in valid_expenses
+                        ]
                         if budget_value <= 20:
                             dp_table, tabulation_states = knapsack_tabulation(
                                 costs, priorities, budget_value, return_count=True
@@ -123,6 +138,7 @@ def home():
         expenses=expenses,
         result=result,
         memo_result=memo_result,
+        priority_chart_data=priority_chart_data,
         dp_table=dp_table,
         tabulation_states=tabulation_states,
         expense_benchmarks=expense_benchmarks,
