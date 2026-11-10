@@ -148,9 +148,17 @@
                 </button>
 
                 
-                <button type="submit">
-                    Optimize My Budget
-                </button>
+            <button type="submit">
+                Optimize My Budget
+            </button>
+
+            <button
+                type="submit"
+                formaction="{{ url_for('download_csv') }}"
+                formmethod="POST"
+             >
+                Download CSV Report
+            </button>
 
             </form>
 
