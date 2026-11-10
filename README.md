@@ -7,15 +7,22 @@ SmartBudget is a group project developed for CSCE 4110 - Algorithms at the Unive
 The project implements and compares two dynamic programming approaches to the 0/1 Knapsack problem: memoization (top-down) and tabulation (bottom-up).
 
 ## Project Features
-
-- Enter a total budget and up to four expenses.
+- Enter a total budget and dynamically add or remove expenses.
 - Assign a name, cost, and priority score to each expense.
 - Validate inputs to prevent incomplete or invalid expense entries.
-- Find the optimal combination of expenses within the budget.
+- Find the optimal combination of expenses using 0/1 Knapsack.
+- Compare memoization (top-down) and tabulation (bottom-up).
 - Display selected expenses, maximum priority, total cost, and remaining budget.
-- Compare the results of memoization and tabulation.
+- View a financial dashboard with budget summary cards and utilization progress.
+- Display a breakdown of selected expenses.
+- Visualize algorithm performance using interactive charts.
+- Compare expense priority scores using a chart.
+- Display budget insights and recommendations.
 - Display the tabulation DP table for budgets of 20 or less.
-- View the number of DP states evaluated by memoization.
+- View DP states evaluated by memoization.
+- Download optimization results as a CSV report.
+- Save and load budget information using browser localStorage.
+- Run automated algorithm and Flask application tests.
 - Run performance benchmarks comparing execution times and DP states.
 
 ## Algorithms Used
@@ -76,25 +83,36 @@ On Windows:
 python3 -m pip install -r requirements.txt
 ```
 
+
 ## Running SmartBudget
 
-From the main project directory, run:
+After installing the dependencies, open a terminal in the project directory.
+
+Start the Flask development server:
 
 ```bash
-python3 app.py
+python3 -m flask --app app run --debug --port 5001
 ```
 
-Then open the following address in your browser:
+Open your browser and visit:
 
-http://127.0.0.1:5000
+http://127.0.0.1:5001
 
-You can also use:
+Alternatively:
 
-http://localhost:5000
+http://localhost:5001
 
-**Note:** SmartBudget currently runs on a local Flask development server. The terminal running Flask must remain open while using the application. To stop the server, press `Control + C`.
+### Stopping the Server
 
-The localhost address is accessible only from the computer running the server. It is not a public website.
+Press `Control + C` in the terminal running Flask.
+
+### Important Notes
+
+- The Flask server must remain running while using SmartBudget.
+- Port 5001 is used in these instructions.
+- SmartBudget currently runs locally, not on a publicly hosted website.
+- The `--debug` option is intended for local development only.
+
 
 ## Example Input
 
@@ -126,17 +144,68 @@ Both memoization and tabulation should return the same maximum priority.
 
 For a budget of 20 or less, the application also displays the tabulation DP table.
 
+
 ## Running Automated Tests
 
-The project includes automated algorithm tests in `test_algorithms.py`.
+SmartBudget includes automated tests using Python's built-in `unittest` framework.
 
-Run:
+The project contains two testing files:
+
+### 1. Algorithm Tests
+
+File: `test_algorithms.py`
+
+These five tests verify the correctness of the dynamic programming algorithms:
+
+- Exact-budget selection
+- Original $500 budget example
+- Single expense
+- Small budget
+- Zero-priority expenses
+
+Run the algorithm tests:
 
 ```bash
 python3 -m unittest -v test_algorithms
 ```
 
-The tests cover cases including exact-budget selection, the original $500 example, a single expense, a small budget, and zero-priority expenses.
+### 2. Flask Application Tests
+
+File: `test_app.py`
+
+These six tests verify the Flask application's routes and input validation:
+
+- Homepage loads successfully
+- Budget optimization produces results
+- CSV report downloads successfully
+- Negative budget is rejected
+- Negative expense cost is rejected
+- Negative priority score is rejected
+
+Run the Flask tests:
+
+```bash
+python3 -m unittest -v test_app
+```
+
+### 3. Run All Tests
+
+To automatically discover and run both test files:
+
+```bash
+python3 -m unittest discover -v
+```
+
+Expected result:
+
+```text
+Ran 11 tests
+
+OK
+```
+
+All 11 automated tests passed during local verification.
+
 
 ## Performance Analysis
 
@@ -177,44 +246,100 @@ It generates:
 
 The benchmarks help demonstrate how different dynamic programming approaches perform as input size and budget capacity change.
 
+
 ## Project Structure
 
 ```text
 SmartBudget---CSCE-4110/
+│
 ├── app.py
 ├── Memoization.py
 ├── Tabulation.py
+│
 ├── benchmark.py
+├── benchmark_budget.py
 ├── benchmark_results.csv
+├── budget_benchmark_results.csv
+│
 ├── runtime_comparison.png
+├── budget_runtime_comparison.png
+├── budget_states_comparison.png
+│
 ├── test_algorithms.py
+├── test_app.py
+│
 ├── templates/
 │   └── index.html
+│
+├── static/
+│   └── style.css
+│
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
-The repository includes both expense-count and budget-scaling benchmark scripts, their CSV results, and the generated comparison graphs.
+### File Descriptions
+
+- `app.py` - Flask application, routes, form validation, and CSV export.
+- `Memoization.py` - Top-down dynamic programming implementation.
+- `Tabulation.py` - Bottom-up dynamic programming implementation.
+- `benchmark.py` - Performance testing with increasing expense counts.
+- `benchmark_budget.py` - Performance testing with increasing budgets.
+- `test_algorithms.py` - Five automated algorithm tests.
+- `test_app.py` - Six automated Flask application tests.
+- `templates/index.html` - Web application interface and JavaScript functionality.
+- `static/style.css` - Dashboard styling.
+- `requirements.txt` - Python dependencies.
+- `README.md` - Project documentation.
+
+The CSV files contain benchmark results, while the PNG files contain generated performance comparison graphs.
+
+
 
 ## Team Contributions
 
 | Team Member | Main Responsibilities |
 |---|---|
 | Pragyan Gaire | Flask application, expense input and validation, algorithm integration, DP table display, performance analysis, and documentation |
-| Vicky (Bicky) | Tabulation algorithm and result reconstruction |
-| Roshan | Memoization algorithm and automated testing |
+| Bicky | Tabulation algorithm and result reconstruction, dashboard enhancements, financial summary cards, interactive charts, budget insights, CSV export, Save/Load Budget functionality, and automated Flask application tests |
+| Roshan | Memoization algorithm and automated algorithm testing |
 
-Team members also collaborate through GitHub branches, Pull Requests, code reviews, and testing.
+Team members collaborated through GitHub feature branches, Pull Requests, code reviews, integration t
+
 
 ## Technologies Used
 
-- Python
+### Backend
+- Python 3
 - Flask
-- HTML
+- Python unittest framework
+
+### Frontend
+- HTML5
+- CSS3
+- JavaScript
+- Chart.js for interactive charts
+
+### Algorithms
+- 0/1 Knapsack Problem
 - Dynamic Programming
-- Git and GitHub
-- Matplotlib
-- CSV
+- Memoization (Top-Down)
+- Tabulation (Bottom-Up)
+
+### Data and Storage
+- CSV for exporting reports and storing benchmark results
+- Browser localStorage for saving and loading budget information
+
+### Performance Analysis
+- Matplotlib for generating benchmark graphs
+- Python performance measurement tools
+
+### Version Control
+- Git
+- GitHub
+- Feature branches and Pull Requests
+
 
 ## Project Purpose
 
