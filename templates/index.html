@@ -254,6 +254,23 @@
     {% endif %}
 </div>
 
+
+{% if priority_chart_data %}
+
+<div class="priority-chart-section">
+
+    <h3>Expense Priority Comparison</h3>
+
+    <p>
+        Compare the priority scores of selected
+        and unselected expenses.
+    </p>
+
+    <canvas id="priorityComparisonChart"></canvas>
+
+</div>
+
+{% endif %}
             
 {% if memo_result and memo_result.selected_expenses %}
 
@@ -772,6 +789,59 @@ new Chart(statesChartCanvas, {
     }
 });
 
+{% if priority_chart_data %}
+
+const priorityChartData = {{ priority_chart_data | tojson }};
+
+const priorityChartCanvas = document.getElementById("priorityComparisonChart");
+
+if (priorityChartCanvas) {
+
+    new Chart(priorityChartCanvas, {
+        type: "bar",
+
+        data: {
+            labels: priorityChartData.map(expense => expense.name),
+
+            datasets: [
+                {
+                    label: "Selected",
+                    data: priorityChartData.map(expense =>
+                        expense.selected ? expense.priority : null
+                    ),
+                    backgroundColor: "#38bdf8"
+                },
+                {
+                    label: "Not Selected",
+                    data: priorityChartData.map(expense =>
+                        !expense.selected ? expense.priority : null
+                    ),
+                    backgroundColor: "#f97316"
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: "Expenses"
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: "Priority Score"
+                    }
+                }
+            }
+        }
+    });
+}
+{% endif %}
 
 
 </script>
