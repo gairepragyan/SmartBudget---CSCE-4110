@@ -1,13 +1,25 @@
+import csv
+from pathlib import Path
 
 from flask import Flask, render_template, request
 from Tabulation import solve_budget, knapsack_tabulation
 from Memoization import knapsack_memoization
 
 app = Flask(__name__)
+def load_benchmark_data(filename):
+    file_path = Path(__file__).resolve().parent / filename
+
+    with open(file_path, newline="") as file:
+        reader = csv.DictReader(file)
+        data = list(reader)
+
+    return data
 
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    expense_benchmarks = load_benchmark_data("benchmark_results.csv")
+    budget_benchmarks = load_benchmark_data("budget_benchmark_results.csv")
     error = None
     success = None
     result = None
@@ -113,6 +125,8 @@ def home():
         memo_result=memo_result,
         dp_table=dp_table,
         tabulation_states=tabulation_states,
+        expense_benchmarks=expense_benchmarks,
+        budget_benchmarks=budget_benchmarks,
     )
 
 
