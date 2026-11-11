@@ -523,3 +523,29 @@ selected-expense-list {
     font-weight: 600;
     margin-bottom: 0;
 }
+/* SmartBudget - Responsive Chart Sizing */
+
+.performance-chart {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    max-height: 320px;
+    margin: 20px 0 30px;
+}
+
+.performance-chart canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.priority-chart-section {
+    width: 100%;
+    max-width: 100%;
+    margin: 20px 0 30px;
+}
+
+.priority-chart-section canvas {
+    display: block;
+    width: 100% !important;
+    height: 320px !important;
+}
