@@ -16,7 +16,7 @@
 
 <div class="dashboard-layout">
 
-    
+
     <aside class="sidebar">
 
         <h2 class="sidebar-logo">SmartBudget</h2>
@@ -32,10 +32,10 @@
 
     </aside>
 
-    
+
     <main class="dashboard-main">
 
-      
+
         <section id="overview">
 
             <h1>Dashboard Overview</h1>
@@ -47,7 +47,7 @@
 
         </section>
 
-        
+
         <section id="expenses">
 
             <h2>Enter Budget Information</h2>
@@ -65,7 +65,17 @@
             <form method="POST">
 
                 <p>
-                    <label for="budget">Total Budget:</label>
+                    <label for="budget">
+                        Total Budget:
+                        <span class="info-tooltip" tabindex="0" role="button"
+                              aria-label="Total budget information">
+                            ⓘ
+                            <span class="tooltip-text">
+                                    The maximum amount of money available to spend.
+                                    Enter a positive whole number, such as 2700.
+                            </span>
+                        </span>
+                    </label>
 
                     <input
                         type="number"
@@ -81,7 +91,7 @@
 
                 <p>Add as many expenses as you need.</p>
 
-                
+
                 <div id="expense-container" class="expense-grid">
 
                     {% for expense in expenses %}
@@ -91,7 +101,17 @@
                         <h3>Expense {{ loop.index }}</h3>
 
                         <p>
-                            <label>Expense Name:</label>
+                            <label>
+                                Expense Name:
+                                <span class="info-tooltip" tabindex="0"
+                                    aria-label="Expense name information">
+                                    ⓘ
+                                    <span class="tooltip-text">
+                                        Enter a short, descriptive name for your expense.
+                                        Examples: Rent, Groceries, Gas, or Tuition.
+                                    </span>
+                                </span>
+                            </label>
 
                             <input
                                 type="text"
@@ -102,7 +122,20 @@
                         </p>
 
                         <p>
-                            <label>Expense Cost:</label>
+
+                            <label>
+                                Expense Cost:
+                                <span class="info-tooltip" tabindex="0"
+                                    aria-label="Expense cost information">
+                                    ⓘ
+                                    <span class="tooltip-text">
+                                        Enter the cost of this expense in whole dollars.
+                                        If the cost exceeds your total budget,
+                                        the algorithm cannot select this expense.
+                                    </span>
+                                </span>
+                            </label>
+
 
                             <input
                                 type="number"
@@ -114,7 +147,18 @@
                         </p>
 
                         <p>
-                            <label>Priority Score:</label>
+
+                            <label>
+                                Priority Score:
+                                <span class="info-tooltip" tabindex="0" aria-label="Priority score information">
+                                    ⓘ
+                                    <span class="tooltip-text">
+                                        How important is this expense? Higher scores mean higher importance.
+                                        Example: Rent = 10, Groceries = 8, Entertainment = 2.
+                                        Enter a nonnegative whole number.
+                                    </span>
+                                </span>
+                            </label>
 
                             <input
                                 type="number"
@@ -125,7 +169,7 @@
                             >
                         </p>
 
-                        
+
                         <button
                             type="button"
                             class="remove-expense-btn"
@@ -139,7 +183,7 @@
 
                 </div>
 
-               
+
                 <button
                     type="button"
                     id="add-expense-btn"
@@ -159,7 +203,7 @@
                 >
                     Load Budget
                 </button>
-                
+
             <button type="submit">
                 Optimize My Budget
             </button>
@@ -176,7 +220,7 @@
 
         </section>
 
-        
+
         {% if result %}
 
         <section id="results">
@@ -228,7 +272,7 @@
     </div>
 
 </div>
-            
+
 
 <div class="budget-insights">
 
@@ -293,7 +337,7 @@
 </div>
 
 {% endif %}
-            
+
 {% if memo_result and memo_result.selected_expenses %}
 
 <h3>Selected Expense Breakdown (Memoization)</h3>
@@ -325,7 +369,7 @@
 
                 </div>
 
-        
+
 
         {% endfor %}
 
@@ -366,7 +410,7 @@
 
         {% endif %}
 
-        
+
         {% if memo_result %}
 
         <section id="analytics">
@@ -430,7 +474,7 @@
 
         {% endif %}
 
-        
+
         {% if dp_table %}
 
         <section id="dp-table">
@@ -500,7 +544,7 @@
     <div class="performance-chart">
     <canvas id="expenseStatesChart"></canvas>
     </div>
-    </section>   
+    </section>
     </main>
 
 </div>
@@ -508,6 +552,54 @@
 
 
 <script>
+
+    function checkExpenseBudgets() {
+        const budget = Number(document.getElementById("budget").value);
+
+        document.querySelectorAll(".expense-card").forEach(function(card) {
+            const costInput = card.querySelector('[name="expense_cost"]');
+            const cost = Number(costInput.value);
+
+            let warning = card.querySelector(".expense-budget-warning");
+
+            if (!warning) {
+                warning = document.createElement("p");
+                warning.className = "expense-budget-warning";
+                costInput.insertAdjacentElement("afterend", warning);
+            }
+
+            if (
+                budget > 0 &&
+                costInput.value !== "" &&
+                Number.isFinite(cost) &&
+                cost > budget
+            ) {
+                const difference = cost - budget;
+
+                warning.textContent =
+                    `⚠ This expense exceeds your budget by $${difference.toLocaleString()}. It cannot be selected during optimization.`;
+
+                warning.style.display = "block";
+            } else {
+                warning.textContent = "";
+                warning.style.display = "none";
+            }
+        });
+    }
+
+    document.querySelector("form").addEventListener("input", function() {
+        checkExpenseBudgets();
+    });
+
+    document.getElementById("expense-container").addEventListener("click", function(event) {
+        if (event.target.classList.contains("remove-expense-btn")) {
+            requestAnimationFrame(checkExpenseBudgets);
+        }
+    });
+
+    checkExpenseBudgets();
+
+
     function clearOldResults() {
     const results = document.getElementById("results");
     const analytics = document.getElementById("analytics");
@@ -554,7 +646,7 @@
         document.getElementById("add-expense-btn");
 
 
-    
+
     function updateExpenseNumbers() {
 
         const cards =
@@ -585,7 +677,16 @@
             <h3>Expense ${expenseNumber}</h3>
 
             <p>
-                <label>Expense Name:</label>
+                <label>
+                    Expense Name:
+                    <span class="info-tooltip" tabindex="0" aria-label="Expense name information">
+                        ⓘ
+                        <span class="tooltip-text">
+                            Enter a name for your expense, such as Rent, Groceries, or Gas.
+                        </span>
+                    </span>
+                </label>
+
 
                 <input
                     type="text"
@@ -595,7 +696,16 @@
             </p>
 
             <p>
-                <label>Expense Cost:</label>
+
+                <label>
+                    Expense Cost:
+                    <span class="info-tooltip" tabindex="0" aria-label="Expense cost information">
+                        ⓘ
+                        <span class="tooltip-text">
+                            Enter the cost in whole dollars. An expense exceeding your budget cannot be selected.
+                        </span>
+                    </span>
+                </label>
 
                 <input
                     type="number"
@@ -606,7 +716,18 @@
             </p>
 
             <p>
-                <label>Priority Score:</label>
+
+                <label>
+                    Priority Score:
+                    <span class="info-tooltip" tabindex="0" aria-label="Priority score information">
+                        ⓘ
+                        <span class="tooltip-text">
+                            How important is this expense? Higher scores mean higher importance.
+                            Example: Rent = 10, Groceries = 8, Entertainment = 2.
+                            Enter a nonnegative whole number.
+                        </span>
+                    </span>
+                </label>
 
                 <input
                     type="number"
@@ -677,7 +798,7 @@
 
         localStorage.setItem("smartBudgetData", JSON.stringify(budgetData));
 
-        alert("Budget saved successfully!");
+        showPopup("Your budget information and expenses have been saved.");
 
     });
     // Load saved budget information
@@ -688,7 +809,7 @@ loadBudgetButton.addEventListener("click", function() {
     const savedData = localStorage.getItem("smartBudgetData");
 
     if (!savedData) {
-        alert("No saved budget found!");
+        showPopup("No saved budget was found.", "Notice", true);
         return;
     }
 
@@ -697,12 +818,12 @@ loadBudgetButton.addEventListener("click", function() {
     try {
         budgetData = JSON.parse(savedData);
     } catch (error) {
-        alert("Saved budget data is invalid!");
+        showPopup("Your saved budget data is invalid.", "Error", true);
         return;
     }
 
     if (!budgetData || !Array.isArray(budgetData.expenses)) {
-        alert("Saved budget data is invalid!");
+        showPopup("Your saved budget data is invalid.", "Error", true);
         return;
     }
 
@@ -726,7 +847,7 @@ loadBudgetButton.addEventListener("click", function() {
 
     clearOldResults();
 
-    alert("Budget loaded successfully!");
+    showPopup("Your saved budget has been restored.");
 
 });
 </script>
@@ -761,7 +882,7 @@ loadBudgetButton.addEventListener("click", function() {
     console.log("Item counts:", itemCounts);
     console.log("Memoization times:", memoTimes);
     console.log("Tabulation times:", tabTimes);
-    
+
 const expenseChartCanvas = document.getElementById("expenseRuntimeChart");
 
 new Chart(expenseChartCanvas, {
@@ -952,6 +1073,37 @@ if (priorityChartCanvas) {
 {% endif %}
 
 
+</script>
+<!-- SmartBudget Custom Popup -->
+<div id="custom-popup" class="popup-overlay" hidden>
+    <div class="popup-box" role="alertdialog"
+         aria-modal="true"
+         aria-labelledby="popup-title"
+         aria-describedby="popup-message">
+        <div class="popup-icon" id="popup-icon">✓</div>
+        <h2 id="popup-title">Success!</h2>
+        <p id="popup-message"></p>
+        <button type="button" id="popup-close-btn">OK</button>
+    </div>
+</div>
+<script>
+function showPopup(message, title = "Success!", isError = false) {
+    const popup = document.getElementById("custom-popup");
+    const icon = document.getElementById("popup-icon");
+
+    document.getElementById("popup-title").textContent = title;
+    document.getElementById("popup-message").textContent = message;
+
+    icon.textContent = isError ? "!" : "✓";
+    icon.classList.toggle("popup-error", isError);
+
+    popup.hidden = false;
+    document.getElementById("popup-close-btn").focus();
+}
+
+document.getElementById("popup-close-btn").addEventListener("click", function() {
+    document.getElementById("custom-popup").hidden = true;
+});
 </script>
 </body>
 </html>
