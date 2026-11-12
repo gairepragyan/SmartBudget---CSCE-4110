@@ -153,7 +153,7 @@ def home():
 
         except ValueError:
             error = "Budget, cost, and priority must be whole numbers."
-    print("CATALOG DEBUG:", len(EXPENSE_CATALOG), EXPENSE_CATALOG)
+    
     return render_template(
         "index.html",
         expense_catalog=EXPENSE_CATALOG,
