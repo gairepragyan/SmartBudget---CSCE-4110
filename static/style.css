@@ -549,3 +549,92 @@ selected-expense-list {
     width: 100% !important;
     height: 320px !important;
 }
+
+/* Expense Comparison Section */
+
+.comparison-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 24px 0;
+}
+
+.comparison-controls select {
+    padding: 10px;
+    background: #0f1b2d;
+    color: #ffffff;
+    border: 1px solid #334155;
+    border-radius: 8px;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.comparison-card {
+    background: #0f1b2d;
+    border: 1px solid #293b55;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.comparison-card h3 {
+    color: #ffffff;
+    margin-bottom: 16px;
+}
+
+.comparison-card p {
+    color: #94a3b8;
+    margin: 10px 0;
+}
+
+.comparison-winner {
+    margin-top: 20px;
+    padding: 16px;
+    background: #123c32;
+    color: #4ade80;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .comparison-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* SmartBudget - Category Filter Styling */
+
+#catalog-category-filter {
+    background-color: #0f1b2d;
+    color: #f1f5f9;
+
+    border: 1px solid #334155;
+    border-radius: 8px;
+
+    padding: 10px 14px;
+    min-width: 180px;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#catalog-category-filter:hover {
+    border-color: #60a5fa;
+}
+
+#catalog-category-filter:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+#catalog-category-filter option {
+    background-color: #0f1b2d;
+    color: #f1f5f9;
+}

@@ -48,6 +48,108 @@
         </section>
 
         
+
+<section id="expense-catalog">
+
+    <h2>Expense Catalog</h2>
+
+    <p>
+        Browse predefined expenses and add them
+        to your budget.
+    </p>
+
+<div class="catalog-search">
+    <label for="catalog-search-input">Search Expenses</label>
+
+    <input
+        type="text"
+        id="catalog-search-input"
+        placeholder="Search for textbooks, laptop, groceries..."
+    >
+</div>
+
+<div class="catalog-filter">
+
+    <label for="catalog-category-filter">
+        Filter by Category
+    </label>
+
+    <select id="catalog-category-filter">
+        <option value="all">All Categories</option>
+        <option value="Education">Education</option>
+        <option value="Food">Food</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Lifestyle">Lifestyle</option>
+        <option value="Transport">Transport</option>
+    </select>
+
+</div>
+
+    <div class="expense-grid">
+
+        {% for item in expense_catalog %}
+        <div class="expense-card" data-category="{{ item.category }}">
+
+            <h3>{{ item.name }}</h3>
+
+            <p>Category: {{ item.category }}</p>
+
+            <p>Cost: ${{ item.cost }}</p>
+
+            <p>Priority: {{ item.priority }}</p>
+
+            
+        <button
+            type="button"
+            class="catalog-add-btn"
+            data-name="{{ item.name }}"
+            data-cost="{{ item.cost }}"
+            data-priority="{{ item.priority }}"
+        >
+            + Add to Budget
+        </button>
+
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+        
+<section id="expense-comparison">
+    <h2>Expense Comparison</h2>
+
+    <p>
+        Compare expenses by cost, priority,
+        and value for money.
+    </p>
+
+    
+<div class="comparison-controls">
+    <label for="compare-expense-1">First Expense:</label>
+    <select id="compare-expense-1">
+        <option value="">Select first expense</option>
+    </select>
+
+    <label for="compare-expense-2">Second Expense:</label>
+    <select id="compare-expense-2">
+        <option value="">Select second expense</option>
+    </select>
+
+    <button type="button" id="compare-expenses-btn">
+        Compare Expenses
+    </button>
+</div>
+
+<div id="comparison-results">
+    <p>Select two expenses to see their comparison.</p>
+</div>
+
+</section>
+
+        
         <section id="expenses">
 
             <h2>Enter Budget Information</h2>
@@ -531,8 +633,9 @@
     }
 }
 
-    // Detect changes to the budget or expense fields
-    document.querySelector("form").addEventListener("input", function() {
+
+// Detect changes to the budget or expense fields
+document.querySelector("form").addEventListener("input", function() {
         clearOldResults();
     });
 
@@ -568,7 +671,208 @@
         });
 
     }
+    
+    // Search and filter expenses in the catalog
+    const catalogSearchInput =
+        document.getElementById("catalog-search-input");
 
+    const catalogCategoryFilter =
+        document.getElementById("catalog-category-filter");
+
+    function filterCatalog() {
+
+        const searchText =
+            catalogSearchInput.value.toLowerCase().trim();
+
+        const selectedCategory =
+            catalogCategoryFilter.value;
+
+        const catalogCards =
+            document.querySelectorAll("#expense-catalog .expense-card");
+
+        catalogCards.forEach(function(card) {
+
+            const expenseName =
+                card.querySelector("h3").textContent.toLowerCase();
+
+            const expenseCategory =
+                card.dataset.category;
+
+            const matchesSearch =
+                expenseName.includes(searchText);
+
+            const matchesCategory =
+                selectedCategory === "all" ||
+                expenseCategory === selectedCategory;
+
+            if (matchesSearch && matchesCategory) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+
+        });
+    }
+
+    catalogSearchInput.addEventListener("input", filterCatalog);
+    catalogCategoryFilter.addEventListener("change", filterCatalog);
+
+    
+// Populate expense comparison dropdowns from the catalog
+const compareExpense1 = document.getElementById("compare-expense-1");
+const compareExpense2 = document.getElementById("compare-expense-2");
+
+const catalogButtons = document.querySelectorAll(".catalog-add-btn");
+
+catalogButtons.forEach(function(button, index) {
+
+    const expenseName = button.dataset.name;
+
+    const option1 = document.createElement("option");
+    option1.value = index;
+    option1.textContent = expenseName;
+
+    const option2 = document.createElement("option");
+    option2.value = index;
+    option2.textContent = expenseName;
+
+    compareExpense1.appendChild(option1);
+    compareExpense2.appendChild(option2);
+
+});
+
+    
+ // Compare two selected catalog expenses
+const compareButton = document.getElementById("compare-expenses-btn");
+
+compareButton.addEventListener("click", function() {
+
+    // Get the selected expense positions
+    const firstIndex = compareExpense1.value;
+    const secondIndex = compareExpense2.value;
+
+    // Make sure two expenses are selected
+    if (firstIndex === "" || secondIndex === "") {
+        alert("Please select two expenses.");
+        return;
+    }
+
+    if (firstIndex === secondIndex) {
+        alert("Please select two different expenses.");
+        return;
+    }
+
+    // Get the two catalog buttons
+    const firstButton = catalogButtons[Number(firstIndex)];
+    const secondButton = catalogButtons[Number(secondIndex)];
+
+    // Read the expense information
+    const firstName = firstButton.dataset.name;
+    const secondName = secondButton.dataset.name;
+
+    const firstCost = Number(firstButton.dataset.cost);
+    const secondCost = Number(secondButton.dataset.cost);
+
+    const firstPriority = Number(firstButton.dataset.priority);
+    const secondPriority = Number(secondButton.dataset.priority);
+
+    // Calculate priority per dollar
+    const firstValue = firstPriority / firstCost;
+    const secondValue = secondPriority / secondCost;
+
+    
+    // Display comparison results on the dashboard
+    const comparisonResults =
+        document.getElementById("comparison-results");
+
+    const betterValue =
+        firstValue > secondValue ? firstName :
+        secondValue > firstValue ? secondName :
+        "Both expenses offer equal value";
+
+    comparisonResults.innerHTML = `
+        <h3>Comparison Results</h3>
+
+        <div class="comparison-grid">
+
+            <div class="comparison-card">
+                <h3>${firstName}</h3>
+                <p>Cost: $${firstCost}</p>
+                <p>Priority: ${firstPriority}</p>
+                <p>Priority per Dollar: ${firstValue.toFixed(3)}</p>
+            </div>
+
+            <div class="comparison-card">
+                <h3>${secondName}</h3>
+                <p>Cost: $${secondCost}</p>
+                <p>Priority: ${secondPriority}</p>
+                <p>Priority per Dollar: ${secondValue.toFixed(3)}</p>
+            </div>
+
+        </div>
+
+        <p class="comparison-winner">
+            Better Value: ${betterValue}
+        </p>
+    `;
+
+
+});
+    
+
+    // Add an expense from the catalog to the budget form
+    document.querySelectorAll(".catalog-add-btn").forEach(function(button) {
+
+        button.addEventListener("click", function() {
+
+            // Read the expense information from the button
+            const name = button.dataset.name;
+            const cost = button.dataset.cost;
+            const priority = button.dataset.priority;
+
+            // Find the existing expense cards
+            const cards = expenseContainer.querySelectorAll(".expense-card");
+
+            // Reuse the initial empty card if one is available
+            let targetCard = null;
+
+            if (cards.length === 1) {
+                const firstCard = cards[0];
+
+                const nameInput = firstCard.querySelector('[name="expense_name"]');
+                const costInput = firstCard.querySelector('[name="expense_cost"]');
+                const priorityInput = firstCard.querySelector('[name="expense_priority"]');
+
+                if (!nameInput.value && !costInput.value && !priorityInput.value) {
+                    targetCard = firstCard;
+                }
+            }
+
+            // Otherwise create a new expense card
+            if (!targetCard) {
+                addExpenseButton.click();
+
+                const updatedCards =
+                    expenseContainer.querySelectorAll(".expense-card");
+
+                targetCard = updatedCards[updatedCards.length - 1];
+            }
+
+            // Fill the card with the selected catalog expense
+            targetCard.querySelector('[name="expense_name"]').value = name;
+            targetCard.querySelector('[name="expense_cost"]').value = cost;
+            targetCard.querySelector('[name="expense_priority"]').value = priority;
+
+            clearOldResults();
+
+            // Move the user to the budget form
+            document.getElementById("expenses").scrollIntoView({
+                behavior: "smooth"
+            });
+
+        });
+
+    });
 
     // Add a new expense
     addExpenseButton.addEventListener("click", function() {
