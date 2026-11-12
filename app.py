@@ -6,6 +6,7 @@ from pathlib import Path
 from flask import Flask, render_template, request, Response
 from Tabulation import solve_budget, knapsack_tabulation
 from Memoization import knapsack_memoization
+from expense_catalog import EXPENSE_CATALOG
 
 
 app = Flask(__name__)
@@ -152,9 +153,10 @@ def home():
 
         except ValueError:
             error = "Budget, cost, and priority must be whole numbers."
-
+    print("CATALOG DEBUG:", len(EXPENSE_CATALOG), EXPENSE_CATALOG)
     return render_template(
         "index.html",
+        expense_catalog=EXPENSE_CATALOG,
         error=error,
         success=success,
         budget=budget,

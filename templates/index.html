@@ -22,13 +22,29 @@
         <h2 class="sidebar-logo">SmartBudget</h2>
         <p class="sidebar-subtitle">Financial Intelligence</p>
 
-        <nav class="sidebar-nav">
-            <a href="#overview">Overview</a>
-            <a href="#expenses">Expenses</a>
-            <a href="#analytics">Analytics</a>
-            <a href="#dp-table">DP Table</a>
-            <a href="#algorithm-performance">Performance</a>
-        </nav>
+<nav class="sidebar-nav">
+
+    <a href="#overview">Overview</a>
+
+    <p class="sidebar-group-title">TRACK SPENDING</p>
+    <a href="#monthly-tracker">Monthly Tracker</a>
+
+    <p class="sidebar-group-title">PLAN & OPTIMIZE</p>
+    <a href="#expense-catalog">Expense Catalog</a>
+    <a href="#expense-comparison">Expense Comparison</a>
+    <a href="#expenses">Budget Optimizer</a>
+
+    <p class="sidebar-group-title">ANALYZE RESULTS</p>
+    {% if result %}
+<a href="#results">Optimization Results</a>
+{% endif %}
+    <a href="#analytics">Analytics</a>
+    {% if dp_table %}
+    <a href="#dp-table">DP Table</a>
+    {% endif %}
+    <a href="#algorithm-performance">Performance</a>
+
+</nav>
 
     </aside>
 
@@ -38,14 +54,239 @@
 
         <section id="overview">
 
-            <h1>Dashboard Overview</h1>
+    <h1>Dashboard Overview</h1>
 
+    <p>
+        SmartBudget helps you track your spending,
+        plan future purchases, and optimize your budget
+        using 0/1 Knapsack and Dynamic Programming.
+    </p>
+
+    <div class="overview-features">
+
+        <div class="overview-feature-card">
+            <h3>Track Spending</h3>
             <p>
-                Budget Optimization Using 0/1 Knapsack
-                and Dynamic Programming
+                Set your monthly budget, record actual expenses,
+                and monitor your remaining balance.
             </p>
+        </div>
 
-        </section>
+        <div class="overview-feature-card">
+            <h3>Plan &amp; Optimize</h3>
+            <p>
+                Compare expenses and use Dynamic Programming
+                to choose purchases that maximize priority
+                within your available budget.
+            </p>
+        </div>
+
+        <div class="overview-feature-card">
+            <h3>Analyze Results</h3>
+            <p>
+                Explore optimization results, spending allocation,
+                priority comparisons, and algorithm performance.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+        <section id="monthly-tracker">
+
+    <h2>Monthly Budget Tracker</h2>
+
+    <p>
+        Track your monthly spending and see
+        how much money you have remaining.
+    </p>
+    <div class="tracker-budget-input">
+
+    <label for="monthly-budget-input">
+        Set Monthly Budget ($)
+    </label>
+
+    <input
+        type="number"
+        id="monthly-budget-input"
+        placeholder="Enter monthly budget"
+        min="1"
+        step="0.01"
+    >
+
+    <button type="button" id="set-monthly-budget">
+        Set Budget
+    </button>
+
+</div>
+
+    <div class="tracker-summary">
+
+        <div class="tracker-card">
+            <h3>Monthly Budget</h3>
+            <p id="tracker-budget">$0</p>
+        </div>
+
+        <div class="tracker-card">
+            <h3>Total Spent</h3>
+            <p id="tracker-spent">$0</p>
+        </div>
+
+        <div class="tracker-card">
+            <h3>Remaining Budget</h3>
+            <p id="tracker-remaining">$0</p>
+        </div>
+
+    </div>
+<!-- Monthly Expense Form -->
+
+<div class="tracker-expense-form">
+
+    <h3>Add Monthly Expense</h3>
+
+    <label for="monthly-expense-name">
+        Expense Name
+    </label>
+
+    <input
+        type="text"
+        id="monthly-expense-name"
+        placeholder="e.g. Groceries"
+    >
+
+    <label for="monthly-expense-amount">
+        Expense Amount ($)
+    </label>
+
+    <input
+        type="number"
+        id="monthly-expense-amount"
+        placeholder="e.g. 100"
+        min="0.01"
+        step="0.01"
+    >
+
+    <button type="button" id="add-monthly-expense">
+        Add Expense
+    </button>
+
+</div>
+<!-- Monthly Expense History -->
+
+<div class="tracker-history">
+
+    <h3>Monthly Expense History</h3>
+
+    <p id="tracker-empty-message">
+        No expenses recorded yet.
+    </p>
+
+    <div id="tracker-expense-list"></div>
+
+</div>
+</section>
+
+
+<section id="expense-catalog">
+
+    <h2>Expense Catalog</h2>
+
+    <p>
+        Browse predefined expenses and add them
+        to your budget.
+    </p>
+
+<div class="catalog-search">
+    <label for="catalog-search-input">Search Expenses</label>
+
+    <input
+        type="text"
+        id="catalog-search-input"
+        placeholder="Search for textbooks, laptop, groceries..."
+    >
+</div>
+
+<div class="catalog-filter">
+
+    <label for="catalog-category-filter">
+        Filter by Category
+    </label>
+
+    <select id="catalog-category-filter">
+        <option value="all">All Categories</option>
+        <option value="Education">Education</option>
+        <option value="Food">Food</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Lifestyle">Lifestyle</option>
+        <option value="Transport">Transport</option>
+    </select>
+
+</div>
+
+    <div class="expense-grid">
+
+        {% for item in expense_catalog %}
+        <div class="expense-card" data-category="{{ item.category }}">
+
+            <h3>{{ item.name }}</h3>
+
+            <p>Category: {{ item.category }}</p>
+
+            <p>Cost: ${{ item.cost }}</p>
+
+            <p>Priority: {{ item.priority }}</p>
+
+
+        <button
+            type="button"
+            class="catalog-add-btn"
+            data-name="{{ item.name }}"
+            data-cost="{{ item.cost }}"
+            data-priority="{{ item.priority }}"
+        >
+            + Add to Budget
+        </button>
+
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+<section id="expense-comparison">
+    <h2>Expense Comparison</h2>
+
+    <p>
+        Compare expenses by cost, priority,
+        and value for money.
+    </p>
+
+
+<div class="comparison-controls">
+    <label for="compare-expense-1">First Expense:</label>
+    <select id="compare-expense-1">
+        <option value="">Select first expense</option>
+    </select>
+
+    <label for="compare-expense-2">Second Expense:</label>
+    <select id="compare-expense-2">
+        <option value="">Select second expense</option>
+    </select>
+
+    <button type="button" id="compare-expenses-btn">
+        Compare Expenses
+    </button>
+</div>
+
+<div id="comparison-results">
+    <p>Select two expenses to see their comparison.</p>
+</div>
+
+</section>
 
 
         <section id="expenses">
@@ -77,14 +318,18 @@
                         </span>
                     </label>
 
-                    <input
-                        type="number"
-                        id="budget"
-                        name="budget"
-                        min="1"
-                        value="{{ budget }}"
-                        required
-                    >
+<input
+    type="number"
+    id="budget"
+    name="budget"
+    min="1"
+    value="{{ budget }}"
+    required
+>
+
+<button type="button" id="use-remaining-budget">
+    Use Remaining Budget
+</button>
                 </p>
 
                 <h2>Expense Information</h2>
@@ -556,7 +801,8 @@
     function checkExpenseBudgets() {
         const budget = Number(document.getElementById("budget").value);
 
-        document.querySelectorAll(".expense-card").forEach(function(card) {
+
+        document.querySelectorAll("#expense-container .expense-card").forEach(function(card) {
             const costInput = card.querySelector('[name="expense_cost"]');
             const cost = Number(costInput.value);
 
@@ -623,8 +869,9 @@
     }
 }
 
-    // Detect changes to the budget or expense fields
-    document.querySelector("form").addEventListener("input", function() {
+
+// Detect changes to the budget or expense fields
+document.querySelector("form").addEventListener("input", function() {
         clearOldResults();
     });
 
@@ -661,6 +908,207 @@
 
     }
 
+    // Search and filter expenses in the catalog
+    const catalogSearchInput =
+        document.getElementById("catalog-search-input");
+
+    const catalogCategoryFilter =
+        document.getElementById("catalog-category-filter");
+
+    function filterCatalog() {
+
+        const searchText =
+            catalogSearchInput.value.toLowerCase().trim();
+
+        const selectedCategory =
+            catalogCategoryFilter.value;
+
+        const catalogCards =
+            document.querySelectorAll("#expense-catalog .expense-card");
+
+        catalogCards.forEach(function(card) {
+
+            const expenseName =
+                card.querySelector("h3").textContent.toLowerCase();
+
+            const expenseCategory =
+                card.dataset.category;
+
+            const matchesSearch =
+                expenseName.includes(searchText);
+
+            const matchesCategory =
+                selectedCategory === "all" ||
+                expenseCategory === selectedCategory;
+
+            if (matchesSearch && matchesCategory) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+
+        });
+    }
+
+    catalogSearchInput.addEventListener("input", filterCatalog);
+    catalogCategoryFilter.addEventListener("change", filterCatalog);
+
+
+// Populate expense comparison dropdowns from the catalog
+const compareExpense1 = document.getElementById("compare-expense-1");
+const compareExpense2 = document.getElementById("compare-expense-2");
+
+const catalogButtons = document.querySelectorAll(".catalog-add-btn");
+
+catalogButtons.forEach(function(button, index) {
+
+    const expenseName = button.dataset.name;
+
+    const option1 = document.createElement("option");
+    option1.value = index;
+    option1.textContent = expenseName;
+
+    const option2 = document.createElement("option");
+    option2.value = index;
+    option2.textContent = expenseName;
+
+    compareExpense1.appendChild(option1);
+    compareExpense2.appendChild(option2);
+
+});
+
+
+ // Compare two selected catalog expenses
+const compareButton = document.getElementById("compare-expenses-btn");
+
+compareButton.addEventListener("click", function() {
+
+    // Get the selected expense positions
+    const firstIndex = compareExpense1.value;
+    const secondIndex = compareExpense2.value;
+
+    // Make sure two expenses are selected
+    if (firstIndex === "" || secondIndex === "") {
+        alert("Please select two expenses.");
+        return;
+    }
+
+    if (firstIndex === secondIndex) {
+        alert("Please select two different expenses.");
+        return;
+    }
+
+    // Get the two catalog buttons
+    const firstButton = catalogButtons[Number(firstIndex)];
+    const secondButton = catalogButtons[Number(secondIndex)];
+
+    // Read the expense information
+    const firstName = firstButton.dataset.name;
+    const secondName = secondButton.dataset.name;
+
+    const firstCost = Number(firstButton.dataset.cost);
+    const secondCost = Number(secondButton.dataset.cost);
+
+    const firstPriority = Number(firstButton.dataset.priority);
+    const secondPriority = Number(secondButton.dataset.priority);
+
+    // Calculate priority per dollar
+    const firstValue = firstPriority / firstCost;
+    const secondValue = secondPriority / secondCost;
+
+
+    // Display comparison results on the dashboard
+    const comparisonResults =
+        document.getElementById("comparison-results");
+
+    const betterValue =
+        firstValue > secondValue ? firstName :
+        secondValue > firstValue ? secondName :
+        "Both expenses offer equal value";
+
+    comparisonResults.innerHTML = `
+        <h3>Comparison Results</h3>
+
+        <div class="comparison-grid">
+
+            <div class="comparison-card">
+                <h3>${firstName}</h3>
+                <p>Cost: $${firstCost}</p>
+                <p>Priority: ${firstPriority}</p>
+                <p>Priority per Dollar: ${firstValue.toFixed(3)}</p>
+            </div>
+
+            <div class="comparison-card">
+                <h3>${secondName}</h3>
+                <p>Cost: $${secondCost}</p>
+                <p>Priority: ${secondPriority}</p>
+                <p>Priority per Dollar: ${secondValue.toFixed(3)}</p>
+            </div>
+
+        </div>
+
+        <p class="comparison-winner">
+            Better Value: ${betterValue}
+        </p>
+    `;
+
+
+});
+
+
+    // Add an expense from the catalog to the budget form
+    document.querySelectorAll(".catalog-add-btn").forEach(function(button) {
+
+        button.addEventListener("click", function() {
+
+            // Read the expense information from the button
+            const name = button.dataset.name;
+            const cost = button.dataset.cost;
+            const priority = button.dataset.priority;
+
+            // Find the existing expense cards
+            const cards = expenseContainer.querySelectorAll(".expense-card");
+
+            // Reuse the initial empty card if one is available
+            let targetCard = null;
+
+            if (cards.length === 1) {
+                const firstCard = cards[0];
+
+                const nameInput = firstCard.querySelector('[name="expense_name"]');
+                const costInput = firstCard.querySelector('[name="expense_cost"]');
+                const priorityInput = firstCard.querySelector('[name="expense_priority"]');
+
+                if (!nameInput.value && !costInput.value && !priorityInput.value) {
+                    targetCard = firstCard;
+                }
+            }
+
+            // Otherwise create a new expense card
+            if (!targetCard) {
+                addExpenseButton.click();
+
+                const updatedCards =
+                    expenseContainer.querySelectorAll(".expense-card");
+
+                targetCard = updatedCards[updatedCards.length - 1];
+            }
+
+            // Fill the card with the selected catalog expense
+            targetCard.querySelector('[name="expense_name"]').value = name;
+            targetCard.querySelector('[name="expense_cost"]').value = cost;
+            targetCard.querySelector('[name="expense_priority"]').value = priority;
+
+            clearOldResults();
+
+            // Move the user to the budget form
+            document.getElementById("expenses").scrollIntoView({
+                behavior: "smooth"
+            });
+
+        });
+
+    });
 
     // Add a new expense
     addExpenseButton.addEventListener("click", function() {
@@ -772,8 +1220,7 @@
     saveBudgetButton.addEventListener("click", function() {
 
         const budget = document.getElementById("budget").value;
-
-        const expenseCards = document.querySelectorAll(".expense-card");
+        const expenseCards = document.querySelectorAll("#expense-container .expense-card");
 
         const expenses = [];
 
@@ -1072,7 +1519,290 @@ if (priorityChartCanvas) {
 }
 {% endif %}
 
+// Monthly Budget Tracker
 
+let monthlyBudget = 0;
+let monthlySpent = 0;
+let monthlyExpenses = [];
+// Load previously saved monthly expenses
+const savedMonthlyExpenses = localStorage.getItem(
+    "smartbudget_monthly_expenses"
+);
+
+if (savedMonthlyExpenses !== null) {
+    monthlyExpenses = JSON.parse(savedMonthlyExpenses);
+}
+// Restore saved expenses to the webpage
+monthlyExpenses.forEach(function (expense) {
+
+    // Add the saved amount to total spending
+    monthlySpent = monthlySpent + expense.amount;
+
+    // Find the expense history container
+    const expenseList = document.getElementById("tracker-expense-list");
+
+    // Create a new expense row
+    const expenseItem = document.createElement("div");
+    expenseItem.className = "tracker-expense-item";
+
+    // Create expense name
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = expense.name;
+
+    // Create expense amount
+    const amountSpan = document.createElement("span");
+    amountSpan.textContent = "$" + expense.amount.toLocaleString();
+    // Create a Delete button
+const deleteButton = document.createElement("button");
+
+// Display "Delete" on the button
+deleteButton.textContent = "Delete";
+
+// Apply our CSS styling
+deleteButton.className = "tracker-delete-btn";
+
+// Make sure this button does not submit a form
+deleteButton.type = "button";
+// Delete this expense when the button is clicked
+deleteButton.addEventListener("click", function () {
+
+    // Remove this expense from the array
+    const expenseIndex = monthlyExpenses.indexOf(expense);
+
+    if (expenseIndex === -1) {
+        return;
+    }
+
+    monthlyExpenses.splice(expenseIndex, 1);
+
+    // Save the updated expense list
+    localStorage.setItem(
+        "smartbudget_monthly_expenses",
+        JSON.stringify(monthlyExpenses)
+    );
+
+    // Subtract the deleted expense from total spending
+    monthlySpent = monthlySpent - expense.amount;
+
+    // Update Total Spent
+    document.getElementById("tracker-spent").textContent =
+        "$" + monthlySpent.toLocaleString();
+
+    // Update Remaining Budget
+    document.getElementById("tracker-remaining").textContent =
+        "$" + (monthlyBudget - monthlySpent).toLocaleString();
+
+    // Remove this expense row from the webpage
+    expenseItem.remove();
+
+    // Show the empty message if no expenses remain
+    if (monthlyExpenses.length === 0) {
+        document.getElementById("tracker-empty-message").style.display = "block";
+    }
+});
+
+    // Put name and amount inside the row
+    expenseItem.appendChild(nameSpan);
+    expenseItem.appendChild(amountSpan);
+    expenseItem.appendChild(deleteButton);
+
+    // Display the row
+    expenseList.appendChild(expenseItem);
+});
+
+// Hide empty message if expenses exist
+if (monthlyExpenses.length > 0) {
+    document.getElementById("tracker-empty-message").style.display = "none";
+}
+
+// Update total spent
+document.getElementById("tracker-spent").textContent =
+    "$" + monthlySpent.toLocaleString();
+
+// Update remaining budget
+document.getElementById("tracker-remaining").textContent =
+    "$" + (monthlyBudget - monthlySpent).toLocaleString();
+// Load saved monthly budget from browser storage
+const savedMonthlyBudget = localStorage.getItem("smartbudget_monthly_budget");
+
+if (savedMonthlyBudget !== null) {
+    monthlyBudget = Number(savedMonthlyBudget);
+
+    document.getElementById("tracker-budget").textContent =
+        "$" + monthlyBudget.toLocaleString();
+
+    document.getElementById("tracker-remaining").textContent =
+        "$" + (monthlyBudget - monthlySpent).toLocaleString();
+
+    document.getElementById("monthly-budget-input").value = monthlyBudget;
+}
+
+const monthlyBudgetInput = document.getElementById("monthly-budget-input");
+const setMonthlyBudgetButton = document.getElementById("set-monthly-budget");
+
+setMonthlyBudgetButton.addEventListener("click", function () {
+
+    const enteredBudget = Number(monthlyBudgetInput.value);
+
+    if (!Number.isFinite(enteredBudget) || enteredBudget <= 0) {
+        alert("Please enter a valid monthly budget.");
+        return;
+    }
+
+    monthlyBudget = enteredBudget;
+    localStorage.setItem("smartbudget_monthly_budget", monthlyBudget);
+
+    document.getElementById("tracker-budget").textContent =
+        "$" + monthlyBudget.toLocaleString();
+
+    document.getElementById("tracker-spent").textContent =
+        "$" + monthlySpent.toLocaleString();
+
+    document.getElementById("tracker-remaining").textContent =
+        "$" + (monthlyBudget - monthlySpent).toLocaleString();
+
+});
+// Add Monthly Expense
+
+const monthlyExpenseName = document.getElementById("monthly-expense-name");
+const monthlyExpenseAmount = document.getElementById("monthly-expense-amount");
+const addMonthlyExpenseButton = document.getElementById("add-monthly-expense");
+
+addMonthlyExpenseButton.addEventListener("click", function () {
+
+    const expenseName = monthlyExpenseName.value.trim();
+    const expenseAmount = Number(monthlyExpenseAmount.value);
+
+    if (monthlyBudget <= 0) {
+        alert("Please set your monthly budget first.");
+        return;
+    }
+
+    if (expenseName === "") {
+        alert("Please enter an expense name.");
+        return;
+    }
+
+    if (monthlyExpenseAmount.value.trim() === "" ||
+        !Number.isFinite(expenseAmount) || expenseAmount <= 0) {
+        alert("Please enter a valid expense amount.");
+        return;
+    }
+
+    monthlySpent = monthlySpent + expenseAmount;
+    // Create an expense object
+const newExpense = {
+    name: expenseName,
+    amount: expenseAmount
+};
+
+// Store the expense in our array
+monthlyExpenses.push(newExpense);
+
+// Save the array in browser storage
+localStorage.setItem(
+    "smartbudget_monthly_expenses",
+    JSON.stringify(monthlyExpenses)
+);
+    // Display the expense in Monthly Expense History
+
+const expenseList = document.getElementById("tracker-expense-list");
+const emptyMessage = document.getElementById("tracker-empty-message");
+
+// Hide "No expenses recorded yet."
+emptyMessage.style.display = "none";
+
+// Create a new row for this expense
+const expenseItem = document.createElement("div");
+expenseItem.className = "tracker-expense-item";
+
+// Create the expense name
+const nameSpan = document.createElement("span");
+nameSpan.textContent = expenseName;
+
+// Create the expense amount
+const amountSpan = document.createElement("span");
+amountSpan.textContent = "$" + expenseAmount.toLocaleString();
+// Create Delete button for newly added expense
+const deleteButton = document.createElement("button");
+deleteButton.textContent = "Delete";
+deleteButton.className = "tracker-delete-btn";
+deleteButton.type = "button";
+
+deleteButton.addEventListener("click", function () {
+
+    // Find and remove this expense from the array
+    const expenseIndex = monthlyExpenses.indexOf(newExpense);
+
+    if (expenseIndex === -1) {
+        return;
+    }
+
+    monthlyExpenses.splice(expenseIndex, 1);
+
+    // Update browser storage
+    localStorage.setItem(
+        "smartbudget_monthly_expenses",
+        JSON.stringify(monthlyExpenses)
+    );
+
+    // Update total spending
+    monthlySpent = monthlySpent - newExpense.amount;
+
+    document.getElementById("tracker-spent").textContent =
+        "$" + monthlySpent.toLocaleString();
+
+    document.getElementById("tracker-remaining").textContent =
+        "$" + (monthlyBudget - monthlySpent).toLocaleString();
+
+    // Remove expense from history
+    expenseItem.remove();
+
+    if (monthlyExpenses.length === 0) {
+        document.getElementById("tracker-empty-message").style.display = "block";
+    }
+});
+
+// Put the name and amount inside the row
+expenseItem.appendChild(nameSpan);
+expenseItem.appendChild(amountSpan);
+expenseItem.appendChild(deleteButton);
+// Add the row to the history
+expenseList.appendChild(expenseItem);
+
+    document.getElementById("tracker-spent").textContent =
+        "$" + monthlySpent.toLocaleString();
+
+    document.getElementById("tracker-remaining").textContent =
+        "$" + (monthlyBudget - monthlySpent).toLocaleString();
+
+    monthlyExpenseName.value = "";
+    monthlyExpenseAmount.value = "";
+
+});
+// Connect Monthly Tracker to Budget Optimizer
+
+const useRemainingBudgetButton =
+    document.getElementById("use-remaining-budget");
+
+useRemainingBudgetButton.addEventListener("click", function () {
+
+    // Calculate available money
+    const remainingBudget = monthlyBudget - monthlySpent;
+
+    // Make sure there is money available
+    if (remainingBudget <= 0) {
+        alert("No remaining budget available for optimization.");
+        return;
+    }
+
+    // Find the optimizer's Total Budget input
+    const optimizerBudgetInput = document.getElementById("budget");
+
+    // Copy remaining money into the optimizer
+    optimizerBudgetInput.value = remainingBudget;
+
+});
 </script>
 <!-- SmartBudget Custom Popup -->
 <div id="custom-popup" class="popup-overlay" hidden>
