@@ -25,6 +25,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const expenseCount = document.getElementById("expenseCount");
     const expenseBadge = document.getElementById("expenseBadge");
 
+    const editModal = document.getElementById("editModal");
+    const editExpenseForm = document.getElementById("editExpenseForm");
+    const editExpenseName = document.getElementById("editExpenseName");
+    const editExpenseCost = document.getElementById("editExpenseCost");
+    const editExpensePriority = document.getElementById("editExpensePriority");
+    const closeEditModal = document.getElementById("closeEditModal");
+    const cancelEditModal = document.getElementById("cancelEditModal");
+
+    const toastContainer = document.getElementById("toastContainer");
+
+    let editingIndex = null;
+    let previousFocus = null;
+
     function loadSavedExpenses() {
         try {
             const saved = localStorage.getItem(STORAGE_KEYS.expenses);
@@ -62,26 +75,65 @@ document.addEventListener("DOMContentLoaded", function () {
                 STORAGE_KEYS.expenses,
                 JSON.stringify(expenses)
             );
+            return true;
         } catch (error) {
             console.error("Could not save expenses:", error);
-            alert("Could not save expenses in this browser.");
+            showToast("Could not save expenses in this browser.", "error");
+            return false;
         }
     }
 
-    const savedBudget = localStorage.getItem(STORAGE_KEYS.budget);
-
-    if (savedBudget !== null) {
-        budgetInput.value = savedBudget;
+    function savePreference(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (error) {
+            console.error("Could not save preference:", error);
+        }
     }
 
-    const savedAlgorithm = localStorage.getItem(STORAGE_KEYS.algorithm);
+    try {
+        const savedBudget = localStorage.getItem(STORAGE_KEYS.budget);
 
-    if (savedAlgorithm === "tabulation" || savedAlgorithm === "memoization") {
-        algorithmSelect.value = savedAlgorithm;
+        if (savedBudget !== null) {
+            budgetInput.value = savedBudget;
+        }
+
+        const savedAlgorithm = localStorage.getItem(STORAGE_KEYS.algorithm);
+
+        if (
+            savedAlgorithm === "tabulation" ||
+            savedAlgorithm === "memoization"
+        ) {
+            algorithmSelect.value = savedAlgorithm;
+        }
+    } catch (error) {
+        console.error("Could not restore preferences:", error);
     }
 
     function formatMoney(amount) {
         return "$" + amount.toLocaleString("en-US");
+    }
+
+    function showToast(message, type = "success") {
+        const toast = document.createElement("div");
+
+        toast.className = "toast " + type;
+        toast.textContent = message;
+
+        toastContainer.appendChild(toast);
+
+        // Keep only the latest three notifications.
+        while (toastContainer.children.length > 3) {
+            toastContainer.firstElementChild.remove();
+        }
+
+        setTimeout(function () {
+            toast.classList.add("hiding");
+
+            setTimeout(function () {
+                toast.remove();
+            }, 300);
+        }, 3000);
     }
 
     function updateBudget() {
@@ -107,30 +159,27 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     budgetInput.addEventListener("input", function () {
-        localStorage.setItem(STORAGE_KEYS.budget, budgetInput.value);
+        savePreference(STORAGE_KEYS.budget, budgetInput.value);
         updateBudget();
     });
 
     algorithmSelect.addEventListener("change", function () {
-        localStorage.setItem(
-            STORAGE_KEYS.algorithm,
-            algorithmSelect.value
-        );
+        savePreference(STORAGE_KEYS.algorithm, algorithmSelect.value);
     });
 
     function validExpense(name, cost, priority) {
         if (!name || name.length > 60) {
-            alert("Please enter a valid expense name.");
+            showToast("Please enter a valid expense name.", "error");
             return false;
         }
 
         if (!Number.isInteger(cost) || cost <= 0) {
-            alert("Expense cost must be a positive whole number.");
+            showToast("Cost must be a positive whole number.", "error");
             return false;
         }
 
         if (!Number.isInteger(priority) || priority < 0) {
-            alert("Priority must be a nonnegative whole number.");
+            showToast("Priority must be a nonnegative whole number.", "error");
             return false;
         }
 
@@ -147,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!validExpense(name, cost, priority)) return;
 
         if (expenses.length >= 50) {
-            alert("You can add a maximum of 50 expenses.");
+            showToast("You can add a maximum of 50 expenses.", "error");
             return;
         }
 
@@ -159,39 +208,129 @@ document.addEventListener("DOMContentLoaded", function () {
         expenseName.value = "";
         expenseCost.value = "";
         expensePriority.value = "10";
+
+        showToast("Expense added successfully!");
         expenseName.focus();
     });
 
-    function editExpense(index) {
+    function openEditExpense(index) {
         const expense = expenses[index];
 
         if (!expense) return;
 
-        const newName = prompt("Edit expense name:", expense.name);
-        if (newName === null) return;
+        editingIndex = index;
+        previousFocus = document.activeElement;
 
-        const newCost = prompt("Edit expense cost ($):", expense.cost);
-        if (newCost === null) return;
+        editExpenseName.value = expense.name;
+        editExpenseCost.value = expense.cost;
+        editExpensePriority.value = String(expense.priority);
 
-        const newPriority = prompt("Edit priority score:", expense.priority);
-        if (newPriority === null) return;
+        // Allow editing a saved priority outside the preset options.
+        if (editExpensePriority.value !== String(expense.priority)) {
+            const option = document.createElement("option");
+            option.value = String(expense.priority);
+            option.textContent = expense.priority + " - Custom";
+            option.dataset.custom = "true";
+            editExpensePriority.appendChild(option);
+            editExpensePriority.value = String(expense.priority);
+        }
 
-        const name = newName.trim();
-        const cost = Number(newCost);
-        const priority = Number(newPriority);
+        editModal.hidden = false;
+        document.body.classList.add("modal-open");
 
-        if (newCost.trim() === "" || newPriority.trim() === "") {
-            alert("Cost and priority cannot be empty.");
+        editExpenseName.focus();
+    }
+
+    function closeModal() {
+        editModal.hidden = true;
+        document.body.classList.remove("modal-open");
+
+        editingIndex = null;
+
+        const customOption = editExpensePriority.querySelector(
+            'option[data-custom="true"]'
+        );
+
+        if (customOption) {
+            customOption.remove();
+        }
+
+        if (previousFocus && previousFocus.isConnected) {
+            previousFocus.focus();
+        }
+
+        previousFocus = null;
+    }
+
+    closeEditModal.addEventListener("click", closeModal);
+    cancelEditModal.addEventListener("click", closeModal);
+
+    editModal.addEventListener("click", function (event) {
+        if (event.target === editModal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (editModal.hidden) return;
+
+        if (event.key === "Escape") {
+            closeModal();
             return;
         }
 
+        // Keep keyboard navigation inside the modal.
+        if (event.key === "Tab") {
+            const controls = Array.from(
+                editModal.querySelectorAll(
+                    "button:not(:disabled), input:not(:disabled), select:not(:disabled)"
+                )
+            ).filter(function (element) {
+                return element.getClientRects().length > 0;
+            });
+
+            const first = controls[0];
+            const last = controls[controls.length - 1];
+
+            if (!first || !last) return;
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (
+                !event.shiftKey &&
+                document.activeElement === last
+            ) {
+                event.preventDefault();
+                first.focus();
+            }
+        }
+    });
+
+    editExpenseForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        if (
+            editingIndex === null ||
+            !expenses[editingIndex]
+        ) {
+            return;
+        }
+
+        const name = editExpenseName.value.trim();
+        const cost = Number(editExpenseCost.value);
+        const priority = Number(editExpensePriority.value);
+
         if (!validExpense(name, cost, priority)) return;
 
-        expenses[index] = { name, cost, priority };
+        expenses[editingIndex] = { name, cost, priority };
 
         saveExpenses();
+        closeModal();
         renderExpenses();
-    }
+
+        showToast("Expense updated successfully!");
+    });
 
     function removeExpense(index) {
         if (index < 0 || index >= expenses.length) return;
@@ -200,13 +339,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         saveExpenses();
         renderExpenses();
+
+        showToast("Expense removed.", "info");
     }
 
     clearAllButton.addEventListener("click", function () {
-        if (expenses.length === 0) {
-            alert("There are no expenses to clear.");
-            return;
-        }
+        if (expenses.length === 0) return;
 
         const confirmed = confirm(
             "Are you sure you want to remove all expenses? " +
@@ -223,6 +361,8 @@ document.addEventListener("DOMContentLoaded", function () {
         expenseName.value = "";
         expenseCost.value = "";
         expensePriority.value = "10";
+
+        showToast("All expenses cleared.", "info");
     });
 
     function renderExpenses() {
@@ -256,7 +396,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const information = document.createElement("p");
             information.textContent =
-                formatMoney(expense.cost) + " | Priority: " + expense.priority;
+                formatMoney(expense.cost) +
+                " | Priority: " +
+                expense.priority;
 
             details.appendChild(name);
             details.appendChild(information);
@@ -268,7 +410,7 @@ document.addEventListener("DOMContentLoaded", function () {
             editButton.setAttribute("aria-label", "Edit " + expense.name);
 
             editButton.addEventListener("click", function () {
-                editExpense(index);
+                openEditExpense(index);
             });
 
             const removeButton = document.createElement("button");
@@ -284,11 +426,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const actions = document.createElement("div");
             actions.className = "expense-actions";
 
-            actions.appendChild(editButton);
-            actions.appendChild(removeButton);
-
-            item.appendChild(details);
-            item.appendChild(actions);
+            actions.append(editButton, removeButton);
+            item.append(details, actions);
 
             expenseList.appendChild(item);
         });
@@ -296,7 +435,8 @@ document.addEventListener("DOMContentLoaded", function () {
         expenseCount.textContent = expenses.length;
 
         expenseBadge.textContent =
-            expenses.length + (expenses.length === 1 ? " item" : " items");
+            expenses.length +
+            (expenses.length === 1 ? " item" : " items");
 
         clearAllButton.disabled = expenses.length === 0;
 
@@ -307,20 +447,26 @@ document.addEventListener("DOMContentLoaded", function () {
         const budget = Number(budgetInput.value);
         const algorithm = algorithmSelect.value;
 
-        if (!Number.isInteger(budget) || budget < 1 || budget > 10000) {
-            alert("Please enter a budget between $1 and $10,000.");
+        if (
+            !Number.isInteger(budget) ||
+            budget < 1 ||
+            budget > 10000
+        ) {
+            showToast(
+                "Please enter a budget between $1 and $10,000.",
+                "error"
+            );
             return;
         }
 
         if (expenses.length === 0) {
-            alert("Please add at least one expense.");
+            showToast("Please add at least one expense.", "error");
             return;
         }
 
         saveExpenses();
-
-        localStorage.setItem(STORAGE_KEYS.budget, budgetInput.value);
-        localStorage.setItem(STORAGE_KEYS.algorithm, algorithm);
+        savePreference(STORAGE_KEYS.budget, budgetInput.value);
+        savePreference(STORAGE_KEYS.algorithm, algorithm);
 
         optimizeButton.disabled = true;
         optimizeButton.textContent = "Optimizing...";
@@ -341,18 +487,22 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || "Budget optimization failed.");
+                throw new Error(
+                    data.error || "Budget optimization failed."
+                );
             }
 
             if (!data.redirect) {
-                throw new Error("Results page URL was not returned.");
+                throw new Error(
+                    "Results page URL was not returned."
+                );
             }
 
             window.location.href = data.redirect;
 
         } catch (error) {
             console.error("SmartBudget optimization error:", error);
-            alert(error.message);
+            showToast(error.message, "error");
 
         } finally {
             optimizeButton.disabled = false;
@@ -362,9 +512,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
     renderExpenses();
 
-    console.log(
-        "SmartBudget loaded successfully.",
-        expenses.length,
-        "saved expenses restored."
-    );
 });

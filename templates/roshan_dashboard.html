@@ -8,51 +8,35 @@
 
     <title>SmartBudget | Financial Dashboard</title>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
-
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
           rel="stylesheet">
 
-    <!-- Main CSS -->
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/roshan_style.css') }}">
 
-    <!-- JavaScript -->
     <script src="{{ url_for('static', filename='Javascript/roshan_script.js') }}"
             defer></script>
-
 </head>
 
 <body>
 
 <div class="app-shell">
 
-    <!-- ====================================
-         SIDEBAR
-    ===================================== -->
-
     <aside class="sidebar">
 
-        <!-- BRAND -->
         <div class="brand">
-
             <div class="brand-icon">✦</div>
 
             <span>
                 Smart<span class="accent">Budget</span>
             </span>
-
         </div>
 
         <p class="sidebar-label">WORKSPACE</p>
 
-        <!-- NAVIGATION -->
         <nav class="navigation" aria-label="Main navigation">
 
             <a href="{{ url_for('dashboard') }}"
@@ -61,70 +45,51 @@
                 Dashboard
             </a>
 
-            <a href="#expenses"
-               class="nav-link">
+            <a href="#expenses" class="nav-link">
                 <span>▤</span>
                 Expenses
             </a>
 
-            <a href="#optimizer"
-               class="nav-link">
+            <a href="#optimizer" class="nav-link">
                 <span>✧</span>
                 Optimizer
             </a>
 
-            <a href="{{ url_for('results') }}"
-               class="nav-link">
+            <a href="{{ url_for('results') }}" class="nav-link">
                 <span>◉</span>
                 Results
             </a>
 
         </nav>
 
-        <!-- SIDEBAR BOTTOM -->
         <div class="sidebar-bottom">
 
             <div class="sidebar-tip">
-
                 <strong>✦ SMART TIP</strong>
-
                 <p>
                     Make every dollar count with
                     intelligent budget optimization.
                 </p>
-
             </div>
 
             <div class="profile">
-
                 <div class="avatar">SB</div>
 
                 <div>
                     <strong>SmartBudget</strong>
                     <small>Personal Workspace</small>
                 </div>
-
             </div>
 
         </div>
-
     </aside>
-
-
-    <!-- ====================================
-         MAIN CONTENT
-    ===================================== -->
 
     <main class="main-content" id="dashboard">
 
-        <!-- HEADER -->
         <header class="topbar">
 
             <div class="header-text">
-
-                <p class="eyebrow">
-                    YOUR FINANCIAL WORKSPACE
-                </p>
+                <p class="eyebrow">YOUR FINANCIAL WORKSPACE</p>
 
                 <h1>
                     Good to see you
@@ -134,36 +99,24 @@
                 <p class="subtitle">
                     A smarter way to plan your spending.
                 </p>
-
             </div>
 
             <div class="top-actions">
-
                 <span class="live-pill">
                     <span class="live-dot"></span>
                     Ready to Optimize
                 </span>
-
             </div>
 
         </header>
 
-
-        <!-- ====================================
-             OVERVIEW CARDS
-        ===================================== -->
-
         <section class="overview-grid">
 
-            <!-- TOTAL BUDGET -->
             <article class="glass-card budget-card">
 
                 <div class="card-heading">
-
                     <span>YOUR TOTAL BUDGET</span>
-
                     <span class="card-icon">✦</span>
-
                 </div>
 
                 <div class="hero-amount" id="budgetDisplay">
@@ -175,40 +128,24 @@
                 </p>
 
                 <div class="budget-progress">
-
                     <div class="progress-track">
-
                         <div class="progress-fill"
                              id="budgetProgress"></div>
-
                     </div>
 
                     <div class="progress-labels">
-
-                        <span id="spentLabel">
-                            $0 planned
-                        </span>
-
-                        <span id="remainingLabel">
-                            $500 remaining
-                        </span>
-
+                        <span id="spentLabel">$0 planned</span>
+                        <span id="remainingLabel">$500 remaining</span>
                     </div>
-
                 </div>
 
             </article>
 
-
-            <!-- PLANNED EXPENSES -->
             <article class="glass-card metric-card">
 
                 <div class="card-heading">
-
                     <span>PLANNED EXPENSES</span>
-
                     <span class="metric-icon cyan">▤</span>
-
                 </div>
 
                 <div class="metric-value" id="expenseCount">
@@ -225,16 +162,11 @@
 
             </article>
 
-
-            <!-- MAXIMUM PRIORITY -->
             <article class="glass-card metric-card">
 
                 <div class="card-heading">
-
                     <span>MAXIMUM PRIORITY</span>
-
                     <span class="metric-icon pink">✧</span>
-
                 </div>
 
                 <div class="metric-value" id="priorityDisplay">
@@ -253,46 +185,22 @@
 
         </section>
 
-
-        <!-- ====================================
-             MAIN WORKSPACE
-        ===================================== -->
-
         <section class="workspace-grid">
 
-            <!-- ====================================
-                 EXPENSE MANAGEMENT
-            ===================================== -->
-
-            <article class="glass-card expenses-panel"
-                     id="expenses">
+            <article class="glass-card expenses-panel" id="expenses">
 
                 <div class="section-heading">
-
                     <div>
-
-                        <p class="eyebrow">
-                            PLAN YOUR SPENDING
-                        </p>
-
+                        <p class="eyebrow">PLAN YOUR SPENDING</p>
                         <h2>Manage Expenses</h2>
-
                     </div>
 
                     <span class="section-icon">✦</span>
-
                 </div>
-
-
-                <!-- ====================================
-                     EXPENSE FORM
-                ===================================== -->
 
                 <form id="expenseForm">
 
-                    <!-- TOTAL BUDGET -->
                     <div class="field-group">
-
                         <label for="budgetInput">
                             Total Budget ($)
                         </label>
@@ -307,13 +215,9 @@
                             value="500"
                             required
                         >
-
                     </div>
 
-
-                    <!-- EXPENSE NAME -->
                     <div class="field-group">
-
                         <label for="expenseName">
                             Expense Name
                         </label>
@@ -326,15 +230,11 @@
                             maxlength="60"
                             required
                         >
-
                     </div>
-
 
                     <div class="form-row">
 
-                        <!-- EXPENSE COST -->
                         <div class="field-group">
-
                             <label for="expenseCost">
                                 Cost ($)
                             </label>
@@ -348,20 +248,15 @@
                                 placeholder="300"
                                 required
                             >
-
                         </div>
 
-
-                        <!-- EXPENSE PRIORITY -->
                         <div class="field-group">
-
                             <label for="expensePriority">
                                 Priority
                             </label>
 
-                            <select
-                                id="expensePriority"
-                                name="expense_priority">
+                            <select id="expensePriority"
+                                    name="expense_priority">
 
                                 <option value="10">
                                     10 - Essential
@@ -384,163 +279,87 @@
                                 </option>
 
                             </select>
-
                         </div>
 
                     </div>
 
-
-                    <!-- ADD EXPENSE BUTTON -->
-                    <button
-                        type="submit"
-                        class="primary-button"
-                        id="addExpenseButton">
-
+                    <button type="submit"
+                            class="primary-button"
+                            id="addExpenseButton">
                         <span>＋</span>
                         Add Expense
-
                     </button>
 
                 </form>
-
-
-                <!-- ====================================
-                     YOUR EXPENSES HEADER
-                ===================================== -->
 
                 <div class="expense-list-heading">
 
                     <h3>Your Expenses</h3>
 
-                    <!-- NEW: EXPENSE ACTIONS -->
                     <div class="expense-heading-actions">
 
-                        <!-- EXPENSE COUNT -->
-                        <span
-                            class="count-badge"
-                            id="expenseBadge">
-
+                        <span class="count-badge"
+                              id="expenseBadge">
                             0 items
-
                         </span>
 
-                        <!-- NEW: CLEAR ALL BUTTON -->
                         <button
                             type="button"
                             id="clearAllButton"
                             class="clear-all-button"
                             title="Remove all saved expenses">
-
                             Clear All
-
                         </button>
 
                     </div>
 
                 </div>
 
+                <div class="expense-list"
+                     id="expenseList"
+                     aria-live="polite">
 
-                <!-- ====================================
-                     EXPENSE LIST
-                     JAVASCRIPT WILL DISPLAY ITEMS HERE
-                ===================================== -->
-
-                <div
-                    class="expense-list"
-                    id="expenseList"
-                    aria-live="polite">
-
-                    <!-- EMPTY STATE -->
                     <div class="empty-state">
-
                         <span>◇</span>
 
-                        <p>
-                            No expenses added yet.
-                        </p>
+                        <p>No expenses added yet.</p>
 
                         <small>
                             Add an expense to get started.
                         </small>
-
                     </div>
 
                 </div>
-
-
-                <!--
-                    EACH EXPENSE WILL DISPLAY:
-
-                    Expense Name
-                    Cost
-                    Priority
-
-                    [Edit] [Remove]
-
-                    The Edit and Remove buttons
-                    are created by JavaScript.
-                -->
 
             </article>
 
-
-            <!-- ====================================
-                 BUDGET OPTIMIZER
-            ===================================== -->
-
-            <article class="glass-card optimizer-panel"
-                     id="optimizer">
+            <article class="glass-card optimizer-panel" id="optimizer">
 
                 <div class="section-heading">
-
                     <div>
-
-                        <p class="eyebrow">
-                            INTELLIGENT PLANNING
-                        </p>
-
+                        <p class="eyebrow">INTELLIGENT PLANNING</p>
                         <h2>Budget Optimizer</h2>
-
                     </div>
 
                     <span class="section-icon">✧</span>
-
                 </div>
 
-
-                <!-- ANIMATED OPTIMIZER -->
                 <div class="optimizer-visual">
-
                     <div class="orbit orbit-one"></div>
-
                     <div class="orbit orbit-two"></div>
-
-                    <div class="optimizer-core">
-                        ✦
-                    </div>
-
+                    <div class="optimizer-core">✦</div>
                 </div>
 
-
-                <!-- OPTIMIZER DESCRIPTION -->
                 <h3 class="optimizer-title">
                     Spend smarter, not more.
                 </h3>
 
                 <p class="optimizer-description">
-
-                    Discover the best combination of
-                    expenses without exceeding your budget.
-
+                    Discover the best combination of expenses
+                    without exceeding your budget.
                     Let our intelligent algorithm maximize
                     your spending priorities.
-
                 </p>
-
-
-                <!-- ====================================
-                     ALGORITHM SELECTION
-                ===================================== -->
 
                 <div class="field-group">
 
@@ -562,18 +381,12 @@
 
                 </div>
 
-
-                <!-- OPTIMIZE BUTTON -->
-                <button
-                    type="button"
-                    class="optimize-button"
-                    id="optimizeButton">
-
+                <button type="button"
+                        class="optimize-button"
+                        id="optimizeButton">
                     <span>✦</span>
                     Optimize My Budget
-
                 </button>
-
 
                 <p class="optimizer-note">
                     0/1 Knapsack · SmartBudget Algorithm
@@ -583,25 +396,144 @@
 
         </section>
 
-
-        <!-- ====================================
-             FOOTER
-        ===================================== -->
-
         <footer class="footer">
-
-            <span>
-                SmartBudget © 2026
-            </span>
+            <span>SmartBudget © 2026</span>
 
             <span>
                 CSCE 4110 · 0/1 Knapsack Optimization
             </span>
-
         </footer>
 
     </main>
 
+</div>
+
+
+<!-- Edit expense dialog -->
+
+<div class="modal-overlay" id="editModal" hidden>
+
+    <div class="edit-modal"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="editModalTitle">
+
+        <div class="modal-header">
+
+            <div>
+                <h2 id="editModalTitle">Edit Expense</h2>
+                <p>Update your expense information</p>
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeEditModal"
+                aria-label="Close edit dialog">
+                ×
+            </button>
+
+        </div>
+
+        <form id="editExpenseForm">
+
+            <div class="field-group">
+
+                <label for="editExpenseName">
+                    Expense Name
+                </label>
+
+                <input
+                    type="text"
+                    id="editExpenseName"
+                    maxlength="60"
+                    required
+                >
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="field-group">
+
+                    <label for="editExpenseCost">
+                        Cost ($)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="editExpenseCost"
+                        min="1"
+                        step="1"
+                        required
+                    >
+
+                </div>
+
+                <div class="field-group">
+
+                    <label for="editExpensePriority">
+                        Priority
+                    </label>
+
+                    <select id="editExpensePriority">
+
+                        <option value="10">
+                            10 - Essential
+                        </option>
+
+                        <option value="8">
+                            8 - Very Important
+                        </option>
+
+                        <option value="6">
+                            6 - Important
+                        </option>
+
+                        <option value="4">
+                            4 - Moderate
+                        </option>
+
+                        <option value="2">
+                            2 - Low
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="modal-cancel"
+                    id="cancelEditModal">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="modal-save">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- Notifications -->
+
+<div class="toast-container"
+     id="toastContainer"
+     role="status"
+     aria-live="polite">
 </div>
 
 </body>
