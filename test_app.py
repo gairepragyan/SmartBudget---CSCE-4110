@@ -6,106 +6,106 @@ from app import app
 class TestFlaskApp(unittest.TestCase):
 
     def setUp(self):
+        app.config["TESTING"] = True
         self.client = app.test_client()
 
-    # Test 1: Check whether the homepage opens
-    def test_homepage(self):
+    def sample_data(self):
+        return {
+            "budget": 250,
+            "algorithm": "tabulation",
+            "expenses": [
+                {"name": "Books", "cost": 100, "priority": 10},
+                {"name": "Course", "cost": 150, "priority": 8},
+                {"name": "Headphones", "cost": 80, "priority": 6}
+            ]
+        }
 
+    # Test 1: Homepage loads Roshan's dashboard
+    def test_homepage(self):
         response = self.client.get("/")
 
         self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Manage Expenses", response.data)
+        self.assertIn(b"Budget Optimizer", response.data)
 
-        self.assertIn(b"Dashboard Overview", response.data)
-
-    # Test 2: Check budget optimization
+    # Test 2: Budget optimization
     def test_budget_optimization(self):
-
-        response = self.client.post("/", data={
-            "budget": "250",
-            "expense_name": ["Books", "Course", "Headphones"],
-            "expense_cost": ["100", "150", "80"],
-            "expense_priority": ["10", "8", "6"]
-        })
+        response = self.client.post(
+            "/optimize",
+            json=self.sample_data()
+        )
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.get_json()["redirect"],
+            "/results"
+        )
 
-        self.assertIn(b"Optimization Results", response.data)
+        with self.client.session_transaction() as session:
+            result = session["results"]
 
-        self.assertIn(b"Maximum Priority", response.data)
+        self.assertEqual(result["max_priority"], 18)
+        self.assertEqual(result["total_spent"], 250)
+        self.assertEqual(result["remaining"], 0)
+        self.assertEqual(
+            [e["name"] for e in result["selected_expenses"]],
+            ["Books", "Course"]
+        )
 
-        self.assertIn(b"18", response.data)
-
-    # Test 3: Check CSV report download
+    # Test 3: CSV export after optimization
     def test_csv_export(self):
-
-        response = self.client.post("/download-csv", data={
-            "budget": "250",
-            "expense_name": ["Books", "Course", "Headphones"],
-            "expense_cost": ["100", "150", "80"],
-            "expense_priority": ["10", "8", "6"]
-        })
+        response = self.client.post(
+            "/optimize",
+            json=self.sample_data()
+        )
 
         self.assertEqual(response.status_code, 200)
 
-        self.assertIn("text/csv", response.content_type)
+        csv_response = self.client.get("/download-csv")
 
-        self.assertIn(b"Books", response.data)
+        self.assertEqual(csv_response.status_code, 200)
+        self.assertIn("text/csv", csv_response.content_type)
+        self.assertIn(b"Books", csv_response.data)
+        self.assertIn(b"Course", csv_response.data)
+        self.assertIn(b"Headphones", csv_response.data)
 
-        self.assertIn(b"Course", response.data)
-
-        self.assertIn(b"Headphones", response.data)
-
-        self.assertIn(b"Maximum Priority,18", response.data)
-
-    # Test 4: Reject a negative budget
+    # Test 4: Negative budget rejected
     def test_negative_budget(self):
+        data = self.sample_data()
+        data["budget"] = -100
 
-        response = self.client.post("/", data={
-            "budget": "-100",
-            "expense_name": ["Books"],
-            "expense_cost": ["50"],
-            "expense_priority": ["10"]
-        })
+        response = self.client.post("/optimize", json=data)
 
-        self.assertEqual(response.status_code, 200)
-
+        self.assertEqual(response.status_code, 400)
         self.assertIn(
-            b"Budget must be greater than 0.",
-            response.data
+            "Budget must be between",
+            response.get_json()["error"]
         )
 
-    # Test 5: Reject a negative expense cost
+    # Test 5: Negative expense cost rejected
     def test_negative_expense_cost(self):
+        data = self.sample_data()
+        data["expenses"][0]["cost"] = -50
 
-        response = self.client.post("/", data={
-            "budget": "300",
-            "expense_name": ["Books"],
-            "expense_cost": ["-50"],
-            "expense_priority": ["10"]
-        })
+        response = self.client.post("/optimize", json=data)
 
-        self.assertEqual(response.status_code, 200)
-
+        self.assertEqual(response.status_code, 400)
         self.assertIn(
-            b"Expense cost must be greater than 0.",
-            response.data
+            "Expense cost must be greater than zero",
+            response.get_json()["error"]
         )
 
-    # Test 6: Reject a negative priority
+    # Test 6: Negative priority rejected
     def test_negative_priority(self):
+        data = self.sample_data()
+        data["expenses"][0]["priority"] = -10
 
-        response = self.client.post("/", data={
-            "budget": "300",
-            "expense_name": ["Books"],
-            "expense_cost": ["50"],
-            "expense_priority": ["-10"]
-        })
+        response = self.client.post("/optimize", json=data)
 
-        self.assertEqual(response.status_code, 200)
-
+        self.assertEqual(response.status_code, 400)
         self.assertIn(
-            b"Priority score cannot be negative.",
-            response.data
+            "Priority cannot be negative",
+            response.get_json()["error"]
         )
 
 
