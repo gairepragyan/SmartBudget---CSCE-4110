@@ -73,7 +73,22 @@ def optimize():
         return {"error": "Invalid request information."}, 400
 
     try:
-        budget = int(data["budget"])
+        def parse_integer(value, field_name):
+            if isinstance(value, bool):
+                raise ValueError(f"{field_name} must be a whole number.")
+
+            if isinstance(value, int):
+                return value
+
+            if isinstance(value, str):
+                value = value.strip()
+
+                if value and value.lstrip("-").isdigit():
+                    return int(value)
+
+            raise ValueError(f"{field_name} must be a whole number.")
+
+        budget = parse_integer(data["budget"], "Budget")
         algorithm = data.get("algorithm", "tabulation")
         expenses = data["expenses"]
 
@@ -95,9 +110,15 @@ def optimize():
             if not isinstance(expense, dict):
                 raise ValueError("Invalid expense information.")
 
-            name = str(expense["name"]).strip()
-            cost = int(expense["cost"])
-            priority = int(expense["priority"])
+            
+            raw_name = expense["name"]
+
+            if not isinstance(raw_name, str):
+                raise ValueError("Please enter a valid expense name.")
+
+            name = raw_name.strip()
+            cost = parse_integer(expense["cost"], "Expense cost")
+            priority = parse_integer(expense["priority"], "Priority")
 
             if not name or len(name) > 60:
                 raise ValueError("Please enter a valid expense name.")
