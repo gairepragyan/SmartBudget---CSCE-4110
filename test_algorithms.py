@@ -3,6 +3,7 @@
 # Testing Memoization and Tabulation Algorithms
 
 import unittest
+import random
 
 from Memoization import knapsack_memoization
 from Tabulation import solve_budget
@@ -105,6 +106,54 @@ class TestSmartBudget(unittest.TestCase):
         memo, tab = self.compare_algorithms(expenses, 150)
 
         self.assertEqual(memo["maximum_priority"], 8)
+
+    def test_random_inputs_against_brute_force(self):
+        rng = random.Random(4110)
+
+        for case_number in range(20):
+            n = rng.randint(1, 8)
+            budget = rng.randint(1, 40)
+
+            expenses = [
+                {
+                    "name": f"Item {i}",
+                    "cost": rng.randint(1, 20),
+                    "priority": rng.randint(0, 10)
+                }
+                for i in range(n)
+            ]
+
+            # Independently examine every possible subset.
+            brute_force_max = 0
+
+            for mask in range(1 << n):
+                total_cost = 0
+                total_priority = 0
+
+                for i in range(n):
+                    if mask & (1 << i):
+                        total_cost += expenses[i]["cost"]
+                        total_priority += expenses[i]["priority"]
+
+                if total_cost <= budget:
+                    brute_force_max = max(
+                        brute_force_max, total_priority
+                    )
+
+            with self.subTest(case=case_number, budget=budget):
+                memo, tab = self.compare_algorithms(
+                    expenses, budget
+                )
+
+                self.assertEqual(
+                    memo["maximum_priority"],
+                    brute_force_max
+                )
+
+                self.assertEqual(
+                    tab["maximum_priority"],
+                    brute_force_max
+                )
 
 
 if __name__ == "__main__":
