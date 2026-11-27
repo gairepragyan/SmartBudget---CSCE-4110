@@ -45,12 +45,13 @@ def run_tabulation(expenses, budget):
 
     selected.reverse()
 
+
     return {
         "maximum_priority": max_priority,
         "selected_expenses": selected,
-        "states_evaluated": states
+        "states_evaluated": states,
+        "dp_table": dp if len(expenses) <= 10 and budget <= 50 else None
     }
-
 
 def run_memoization(expenses, budget):
     result = knapsack_memoization(expenses, budget)
@@ -143,7 +144,8 @@ def optimize():
         "allocation_percent": allocation_percent,
         "algorithm": algorithm.title(),
         "expense_count": len(clean_expenses),
-        "states_evaluated": result["states_evaluated"]
+        "states_evaluated": result["states_evaluated"],
+        "dp_table": result.get("dp_table")
     }
 
     return {"redirect": url_for("results")}
