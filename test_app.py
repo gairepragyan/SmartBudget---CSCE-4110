@@ -108,6 +108,67 @@ class TestFlaskApp(unittest.TestCase):
             response.get_json()["error"]
         )
 
+    # Test 7: DP table appears for small Tabulation inputs
+    def test_dp_table_small_tabulation(self):
+        data = {
+            "budget": 10,
+            "algorithm": "tabulation",
+            "expenses": [
+                {"name": "Books", "cost": 2, "priority": 10},
+                {"name": "Course", "cost": 3, "priority": 8},
+                {"name": "Headphones", "cost": 4, "priority": 6}
+            ]
+        }
+
+        response = self.client.post("/optimize", json=data)
+        self.assertEqual(response.status_code, 200)
+
+        with self.client.session_transaction() as session:
+            result = session["results"]
+
+        self.assertIsNotNone(result["dp_table"])
+        self.assertEqual(len(result["dp_table"]), 4)
+        self.assertEqual(len(result["dp_table"][0]), 11)
+        self.assertEqual(result["dp_table"][-1][-1], 24)
+
+        results_page = self.client.get("/results")
+        self.assertEqual(results_page.status_code, 200)
+        self.assertIn(b"Tabulation DP Table", results_page.data)
+
+    # Test 8: DP table is hidden for Memoization
+    def test_dp_table_hidden_memoization(self):
+        data = self.sample_data()
+        data["algorithm"] = "memoization"
+
+        response = self.client.post("/optimize", json=data)
+        self.assertEqual(response.status_code, 200)
+
+        with self.client.session_transaction() as session:
+            result = session["results"]
+
+        self.assertIsNone(result["dp_table"])
+
+        results_page = self.client.get("/results")
+        self.assertEqual(results_page.status_code, 200)
+        self.assertNotIn(b"Tabulation DP Table", results_page.data)
+
+    # Test 9: DP table is hidden for large budgets
+    def test_dp_table_hidden_large_budget(self):
+        data = self.sample_data()
+        data["budget"] = 100
+
+        response = self.client.post("/optimize", json=data)
+        self.assertEqual(response.status_code, 200)
+
+        with self.client.session_transaction() as session:
+            result = session["results"]
+
+        self.assertIsNone(result["dp_table"])
+
+        results_page = self.client.get("/results")
+        self.assertEqual(results_page.status_code, 200)
+        self.assertNotIn(b"Tabulation DP Table", results_page.data)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -608,6 +608,59 @@
             </div>
 
         </section>
+        
+{% if dp_table %}
+<section class="result-panel">
+
+    <p class="eyebrow">DYNAMIC PROGRAMMING</p>
+    <h2>✧ Tabulation DP Table</h2>
+
+    <p class="subtitle">
+        Each cell shows the maximum priority achievable
+        using the expenses considered so far and the
+        available budget.
+    </p>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Expenses / Budget</th>
+                    {% for capacity in range(budget + 1) %}
+                        <th>{{ capacity }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in dp_table %}
+                <tr>
+                    <th>
+                        {% if loop.index0 == 0 %}
+                            No expenses
+                        {% else %}
+                            {{ all_expenses[loop.index0 - 1].name }}
+                        {% endif %}
+                    </th>
+
+                    {% for value in row %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <p class="subtitle">
+        Optimal priority:
+        <strong>{{ max_priority }}</strong>
+        using a budget of ${{ budget }}.
+    </p>
+
+</section>
+{% endif %}
+
 
         <footer class="result-footer">
             SmartBudget © 2026 ·
