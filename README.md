@@ -194,13 +194,14 @@ The project contains two testing files:
 
 File: `test_algorithms.py`
 
-These five tests verify the correctness of the dynamic programming algorithms:
+These six tests verify the correctness of the dynamic programming algorithms, including independent brute-force validation.
 
 - Exact-budget selection
 - Original $500 budget example
 - Single expense
 - Small budget
 - Zero-priority expenses
+- Randomized brute-force validation using 20 reproducible test cases.
 
 Run the algorithm tests:
 
@@ -213,7 +214,7 @@ python3 -m unittest -v test_algorithms
 
 File: `test_app.py`
 
-These nine tests verify the Flask application's routes, input validation, CSV export, and DP table visualization:
+These fifteen tests verify the Flask application's routes, input validation, CSV export, and DP table visualization.
 
 - Homepage loads successfully.
 - Budget optimization produces the expected results.
@@ -224,6 +225,12 @@ These nine tests verify the Flask application's routes, input validation, CSV ex
 - DP table appears correctly for small Tabulation inputs.
 - DP table remains hidden for Memoization.
 - DP table remains hidden for Tabulation when the budget exceeds $50.
+- Fractional budget, cost, and priority values are rejected.
+- Boolean numeric inputs are rejected.
+- Null expense names are rejected.
+- Empty expense lists are rejected.
+- Missing required fields are rejected.
+- Whitespace-only expense names are rejected.
 
 Run the Flask tests:
 
@@ -242,12 +249,11 @@ python3 -m unittest discover -v
 Expected result:
 
 ```text
-Ran 14 tests
+Ran 21 tests
 
 OK
 ```
-All 14 automated tests passed during local verification, including the three tests added for DP table visualization.
-
+All 21 automated tests passed during local verification, including DP table visualization, brute-force correctness validation, and additional input-validation tests.
 
 ## Performance Analysis
 
@@ -352,8 +358,8 @@ SmartBudget---CSCE-4110/
 - `roshan_app.py` - Additional Flask application module retained in the repository.
 - `benchmark.py` - Performance comparisons with increasing expense counts.
 - `benchmark_budget.py` - Performance comparisons with increasing budgets.
-- `test_algorithms.py` - Five algorithm correctness tests.
-- `test_app.py` - Nine Flask application tests, including DP table visualization tests.
+- `test_algorithms.py` - Six algorithm correctness tests, including 20 reproducible brute-force comparisons against both DP algorithms.
+- `test_app.py` - Fifteen Flask application tests covering routes, optimization, CSV export, DP table visualization, and input validation.
 - `templates/index.html` - Earlier dashboard interface retained in the repository.
 - `templates/roshan_dashboard.html` - Active dashboard for managing expenses and selecting an optimization method.
 - `templates/roshan_results.html` - Active results page showing optimized expenses, budget allocation, algorithm details, and the Tabulation DP table for small inputs.
