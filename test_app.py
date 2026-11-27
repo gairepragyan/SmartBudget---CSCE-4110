@@ -170,5 +170,67 @@ class TestFlaskApp(unittest.TestCase):
         self.assertNotIn(b"Tabulation DP Table", results_page.data)
 
 
+    # Reject fractional numeric inputs
+    def test_fractional_numeric_inputs(self):
+        for field in ("budget", "cost", "priority"):
+            with self.subTest(field=field):
+                data = self.sample_data()
+
+                if field == "budget":
+                    data["budget"] = 250.9
+                else:
+                    data["expenses"][0][field] = 10.5
+
+                response = self.client.post("/optimize", json=data)
+                self.assertEqual(response.status_code, 400)
+
+    # Reject boolean values used as numbers
+    def test_boolean_numeric_inputs(self):
+        for field in ("budget", "cost", "priority"):
+            with self.subTest(field=field):
+                data = self.sample_data()
+
+                if field == "budget":
+                    data["budget"] = True
+                else:
+                    data["expenses"][0][field] = True
+
+                response = self.client.post("/optimize", json=data)
+                self.assertEqual(response.status_code, 400)
+
+    # Reject null expense names
+    def test_null_expense_name(self):
+        data = self.sample_data()
+        data["expenses"][0]["name"] = None
+
+        response = self.client.post("/optimize", json=data)
+        self.assertEqual(response.status_code, 400)
+
+    # Reject empty expense lists
+    def test_empty_expense_list(self):
+        data = self.sample_data()
+        data["expenses"] = []
+
+        response = self.client.post("/optimize", json=data)
+        self.assertEqual(response.status_code, 400)
+
+    # Reject missing required fields
+    def test_missing_required_fields(self):
+        for field in ("budget", "expenses"):
+            with self.subTest(field=field):
+                data = self.sample_data()
+                del data[field]
+
+                response = self.client.post("/optimize", json=data)
+                self.assertEqual(response.status_code, 400)
+
+    # Reject names containing only whitespace
+    def test_whitespace_expense_name(self):
+        data = self.sample_data()
+        data["expenses"][0]["name"] = "   "
+
+        response = self.client.post("/optimize", json=data)
+        self.assertEqual(response.status_code, 400)
+
 if __name__ == "__main__":
     unittest.main()
